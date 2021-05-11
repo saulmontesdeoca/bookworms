@@ -4,8 +4,8 @@
 ---
 
 ##### Integrantes:
-1. *[Poner aquí Nombre y Apellidos del integrante 1]* - *[Poner aquí su Matrícula]* - *[Poner aquí su campus]*
-2. *[Poner aquí Nombre y Apellidos del integrante 2]* - *[Poner aquí su Matrícula]* - *[Poner aquí su campus]*
+1. *[Saúl Montes De Oca](http://github.com/saulmontesdeoca/)* - *A01025975* - *CSF*
+2. *[Juan Carlos Hurtado Andrade](https://github.com/CarlosHurand)* - *A01025193* - *CSF*
 
 ---
 ## 1. Aspectos generales
