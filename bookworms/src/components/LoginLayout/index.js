@@ -1,6 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Image } from 'react-bootstrap'
-import LoginForm from '../../components/LoginForm'
+import { Container, Row, Col } from 'react-bootstrap'
 
 const LoginLayout = (props) => {
     return (
