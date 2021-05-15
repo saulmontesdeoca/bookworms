@@ -1,10 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Bigshot+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
+/* body: '#363537',
+text: '#FAFAFA',
+toggleBorder: '#6B8096',
+background: '#999', */
 body {
     font-family: 'Montserrat', sans-serif;
 }
-
+.App {
+    background-color: '#162447';
+}
 .title-logo {
     font-family: 'Bigshot One', cursive;
 }
