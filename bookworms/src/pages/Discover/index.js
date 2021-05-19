@@ -1,10 +1,11 @@
 import React from 'react';
 import Layout from '../../components/Layout';
+import PageCover from '../../components/PageCover';
 
 const Discover = () => {
     return (
         <Layout>
-            Hello from Discover
+            <PageCover img="images/books-white.png" title="Discover"/>
         </Layout>
     );
 };
