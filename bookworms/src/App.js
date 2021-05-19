@@ -7,6 +7,9 @@ import Login from './pages/Login'
 import Signin from './pages/Signin'
 import Home from './pages/Home'
 import Helmet from 'react-helmet';
+import Discover from './pages/Discover';
+import MyBooks from './pages/MyBooks';
+import Search from './pages/Search';
 
 function App() {
   return (
@@ -18,6 +21,15 @@ function App() {
         <Switch>
             <Route exact path="/">
               <Home />
+            </Route>
+            <Route path="/mybooks">
+              <MyBooks />
+            </Route>
+            <Route path="/discover">
+              <Discover />
+            </Route>
+            <Route path="/search">
+              <Search />
             </Route>
             <Route path="/login">
                 <Login />
