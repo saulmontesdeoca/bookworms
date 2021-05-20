@@ -68,7 +68,7 @@ const BookCarousel = (props) => {
             infinite={true}
             autoPlay={false}
             autoPlaySpeed={1000}
-            keyBoardControl={true}
+            keyBoardControl={false}
             customTransition="all .5"
             transitionDuration={500}
             containerClass="carousel-container"
@@ -76,8 +76,7 @@ const BookCarousel = (props) => {
             deviceType={'desktop'}
             dotListClass="custom-dot-list-style"
             itemClass="carousel-item-padding-40-px"
-            >
-            <BookshelfCard cover={data.image_url} title={data.title} author={data.authors}/>
+        >
             <BookshelfCard cover={data.image_url} title={data.title} author={data.authors}/>
             <BookshelfCard cover={data.image_url} title={data.title} author={data.authors}/>
             <BookshelfCard cover={data.image_url} title={data.title} author={data.authors}/>
