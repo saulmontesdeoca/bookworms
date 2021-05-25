@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Image, Row, Col } from 'react-bootstrap';
+import { Image, } from 'react-bootstrap';
 
 const BookCover = (props) => {
     return (

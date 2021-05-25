@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import { Link } from 'react-router-dom';
 import Carousel from 'react-multi-carousel';
 import BookCover from '../BookCover';
 
@@ -6,6 +7,7 @@ const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
       items: 10,
+      slidesToSlide: 3 // optional, default to 1.
     },
     tablet: {
       breakpoint: { max: 1024, min: 464 },
@@ -19,43 +21,56 @@ const responsive = {
     }
   };
 
-const DiscoverCarousel = () => {
+const DiscoverCarousel = (props) => {
 
-    const [recomendations, setRecomendations] = useState([])
-  
-    let myBooks = [25124132,6578787,396103,16248942, 17434747,16248942, 25124132,6578787,396103,16248942, 17434747,16248942];
-  
-    async function fetchBooks(){
+    const [recomendations, setRecomendations] = useState([]);
+    // const [romanticBooks, setRomanticBooks] = useState([]);
+    console.log(props.books);
+
+    // const fetchRomanticBooks = async () => {
+    //     await fetch('/get_romantic')
+    //     .then( res => { res.json()
+    //       .then(data => {
+    //         setRomanticBooks(data.books);
+    //         console.log(romanticBooks);
+    //       })})
+    //     .then( async res => {
+    //     let recom = []
+    //     for (let i=0; i < romanticBooks.length; i++){
+    //       await fetch(`/find_book/${romanticBooks[i]}`).then( res => {
+    //         res.json().then(data => {
+    //           recom.push(data);
+    //       })})
+    //     }
+    //     setRecomendations(recom);
+    //   })
+    // }
+    useEffect( () =>{
+      const fetchBooks = async () => {
         let recom = []
-        for (let i=0; i < myBooks.length; i++){
-          await fetch(`http://localhost:5000/find_book/${myBooks[i]}`).then( res => {
+        for (let i=0; i < props.books.length; i++){
+          await fetch(`/find_book/${props.books[i]}`).then( res => {
             res.json().then(data => {
-              let auths = fetchAuthors(data.authors);
-              data.authors = auths;
-              console.log(data.authors);
-              recom.push(data)
+              recom.push(data);
+              // console.log(data);
           })})
         }
   
         setRecomendations(recom);
     }
-  
-    function fetchAuthors(authors){
-        let auths = []
-        for(let i =0; i< authors.length; i++){
-            fetch(`http://localhost:5000/find_author/${authors[i].author_id}`).then( res => {
-                res.json().then( author => {
-                    auths.push(author.name)
-                })
-            })
-        }
-        return auths
-    }
-  
-      useEffect( () =>{
-          fetchBooks();
-      },[]);
+    fetchBooks();
+    //   const fetchRomanticBooks = async () => {
+    //     await fetch('/get_romantic')
+    //     .then( res => { res.json()
+    //       .then(data => {
+    //         setRomanticBooks(data.books);
+    //         console.log(romanticBooks);
+    //       })})
+    // }
+    //   fetchRomanticBooks();  
+},[props.books]);
 
+    
     return (
         <div>
             <Carousel
@@ -72,9 +87,15 @@ const DiscoverCarousel = () => {
                 removeArrowOnDeviceType={["mobile"]}
                 deviceType={'desktop'}
             >
-            {recomendations.map( (book, key) =>(
-                <BookCover key={key} cover={book.image_url}/>
-            ))}
+            {recomendations ? recomendations.map( (book, key) =>{
+                if(book != null){
+                  if(!(book.image_url === 'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png')){
+                    return <Link to={`/book/${book.book_id}`}>
+                    <BookCover key={key} cover={book.image_url}/>
+                  </Link>
+                  }
+                }
+              }): null}
         </Carousel>
         </div>
     );

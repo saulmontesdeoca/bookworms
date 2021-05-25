@@ -1,25 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Image, Row, Col } from 'react-bootstrap';
+import ReactStars from "react-rating-stars-component";
 
 const BookshelfCard = (props) => {
-    // const [authors, setAuthors] = useState([]);
-
-    // useEffect( () => {
-    //     async function fetchData(){
-    //         let auths = []
-    //         for(let i =0; i< props.authors.length; i++){
-    //             await fetch(`/find_author/${props.authors[i].author_id}`).then( res => {
-    //                 res.json().then( author => {
-    //                     auths.push(author.name)
-    //                 })
-    //             })
-    //         }
-    //         setAuthors(auths);
-    //     }
-    //     fetchData();
-    // }, []);
-    console.log(props.authors);
-    
     return (
         <div style={{position: 'relative', margin: 20, height: '14rem', overflow:'hidden', borderRadius: '10'}}>
             <Image draggable={false} className='blur' src={props.cover} fluid style={{height: '100%', width: '100%', objectFit: 'cover'}} rounded />
@@ -46,6 +29,13 @@ const BookshelfCard = (props) => {
                             <p style={{fontWeight: 'lighter', fontSize: 12}}>
                                 By {props.authors.join(', ')}
                             </p>
+                            <ReactStars
+                                count={5}
+                                value={props.rating}
+                                isHalf= {true}
+                                size={12}
+                                activeColor="white"
+                            />
                         </Col>
                     </Row>
                 </Card.Body>

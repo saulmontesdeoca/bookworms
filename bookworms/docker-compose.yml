@@ -1,0 +1,13 @@
+version: '2'
+services:
+  bookworms:
+    image: bookworms:beta2
+  lb:
+    image: dockercloud/haproxy
+    links:
+      - bookworms
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+      - 81:1936

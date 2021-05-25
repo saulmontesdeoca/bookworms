@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from 'react-multi-carousel';
 import BookshelfCard from '../BookshelfCard';
+import { Link } from 'react-router-dom';
 
 const responsive = {
     desktop: {
@@ -26,11 +27,10 @@ const BookCarousel = (props) => {
   async function fetchBooks(){
       let recom = []
       for (let i=0; i < myBooks.length; i++){
-        await fetch(`http://localhost:5000/find_book/${myBooks[i]}`).then( res => {
+        await fetch(`/find_book/${myBooks[i]}`).then( res => {
           res.json().then(data => {
             let auths = fetchAuthors(data.authors);
             data.authors = auths;
-            console.log(data.authors);
             recom.push(data)
         })})
       }
@@ -41,7 +41,7 @@ const BookCarousel = (props) => {
   function fetchAuthors(authors){
       let auths = []
       for(let i =0; i< authors.length; i++){
-          fetch(`http://localhost:5000/find_author/${authors[i].author_id}`).then( res => {
+          fetch(`/find_author/${authors[i].author_id}`).then( res => {
               res.json().then( author => {
                   auths.push(author.name)
               })
@@ -57,7 +57,7 @@ const BookCarousel = (props) => {
     if (recomendations){
       return (
         <Carousel
-        className='my-5'
+        className='my-5 pr-5'
         swipeable={true}
         draggable={true}
         responsive={responsive}
@@ -70,7 +70,9 @@ const BookCarousel = (props) => {
         deviceType={'desktop'}
     >
       {recomendations.map( (book, key) =>(
-         <BookshelfCard key={key} cover={book.image_url} title={book.title} authors={book.authors}/>
+          <Link key={key} to={`/book/${book.book_id}`}>
+            <BookshelfCard cover={book.image_url} title={book.title} authors={book.authors} rating={book.average_rating}/>
+          </Link>
       ))}
 </Carousel>
       )
