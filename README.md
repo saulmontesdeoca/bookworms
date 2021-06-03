@@ -1,6 +1,6 @@
 # TC3041 Proyecto Final
 
-# *BookWorms.*
+# *BookWorms*
 ---
 
 ##### Integrantes:
