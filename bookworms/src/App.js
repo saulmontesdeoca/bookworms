@@ -10,6 +10,7 @@ import Helmet from 'react-helmet';
 import Discover from './pages/Discover';
 import MyBooks from './pages/MyBooks';
 import Search from './pages/Search';
+import BookDetails from './pages/BookDetails';
 
 function App() {
   return (
@@ -30,6 +31,9 @@ function App() {
             </Route>
             <Route path="/search">
               <Search />
+            </Route>
+            <Route path="/book/:id">
+              <BookDetails />
             </Route>
             <Route path="/login">
                 <Login />

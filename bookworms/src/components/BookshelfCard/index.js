@@ -22,13 +22,17 @@ const BookshelfCard = (props) => {
                 <Card.Body style={{fontSize: 24, fontWeight: 'bolder', padding:0}}>
                     <Row style={{paddingTop:15, bottom: 0, top: 0, margin: 'auto',}}>
                         <Col className='pr-0'>
-                            <Image draggable={false} src={props.cover} fluid style={{height: '100%', objectFit: 'cover',}} rounded />
+                            <Image draggable={false} src={props.cover ? props.cover : 'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png'} fluid style={{height: '100%', objectFit: 'cover',}} rounded />
                         </Col>
                         <Col style={{color: 'white'}} className='p-0'>
-                            <p style={{fontWeight: 'bold', fontSize: 14}}>{props.title}</p>
-                            <p style={{fontWeight: 'lighter', fontSize: 12}}>
-                                By {props.authors.join(', ')}
-                            </p>
+                            {props.title &&
+                                <p style={{fontWeight: 'bold', fontSize: 14}}>{props.title}</p>
+                            }
+                            {props.authors && 
+                                <p style={{fontWeight: 'lighter', fontSize: 12}}>
+                                    By {props.authors.join(', ')}
+                                </p>
+                            }
                             <ReactStars
                                 count={5}
                                 value={props.rating}

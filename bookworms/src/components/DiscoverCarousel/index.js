@@ -24,27 +24,7 @@ const responsive = {
 const DiscoverCarousel = (props) => {
 
     const [recomendations, setRecomendations] = useState([]);
-    // const [romanticBooks, setRomanticBooks] = useState([]);
-    console.log(props.books);
 
-    // const fetchRomanticBooks = async () => {
-    //     await fetch('/get_romantic')
-    //     .then( res => { res.json()
-    //       .then(data => {
-    //         setRomanticBooks(data.books);
-    //         console.log(romanticBooks);
-    //       })})
-    //     .then( async res => {
-    //     let recom = []
-    //     for (let i=0; i < romanticBooks.length; i++){
-    //       await fetch(`/find_book/${romanticBooks[i]}`).then( res => {
-    //         res.json().then(data => {
-    //           recom.push(data);
-    //       })})
-    //     }
-    //     setRecomendations(recom);
-    //   })
-    // }
     useEffect( () =>{
       const fetchBooks = async () => {
         let recom = []
@@ -58,16 +38,7 @@ const DiscoverCarousel = (props) => {
   
         setRecomendations(recom);
     }
-    fetchBooks();
-    //   const fetchRomanticBooks = async () => {
-    //     await fetch('/get_romantic')
-    //     .then( res => { res.json()
-    //       .then(data => {
-    //         setRomanticBooks(data.books);
-    //         console.log(romanticBooks);
-    //       })})
-    // }
-    //   fetchRomanticBooks();  
+    fetchBooks();  
 },[props.books]);
 
     

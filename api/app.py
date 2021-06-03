@@ -1,16 +1,30 @@
-from flask import Flask
+from flask import Flask, redirect
 from flask import jsonify
 from flask import request
 from flask import Response
 from flask_pymongo import PyMongo, ObjectId
 from bson import json_util
 from passlib.hash import sha256_crypt
+import redis
+
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'bookworms'
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/bookworms'
 
 mongo = PyMongo(app)
+redis_cache = redis.Redis(host='redis-10597.c261.us-east-1-4.ec2.cloud.redislabs.com', port=10597,  db=0, password='W9JLic5gqqv4o99zM6V4FKDLBplsdrGR')
+
+@app.route('/redis/<id>', methods=['POST'])
+def redis(id):
+    if redis_cache.exists(id):
+        return 'user exists'
+    else:
+        print('User does not exists adding it to cache')
+        redis_cache.hset(id, 'name', id)
+        redis_cache.expire(id, 10)
+        return 'User does not exists adding it to cache'
+    
 
 ################ Login/Signin stuff ##################
 ### Login check
@@ -18,21 +32,26 @@ mongo = PyMongo(app)
 def login():
     user = mongo.db.users.find_one({'email': request.json['email']})
     if not user:
-        return 'Email or password incorrect', 400
+        return 'Email or password incorrect', 401
     if sha256_crypt.verify(str(request.json['password']), user['password']):
-        return str(user['_id']), 200
+        # redis_cache.hset(id, 'id', id)
+        # redis_cache.hset(id, 'first_name', b"f'{str(user['first_name'])}'")
+        # redis_cache.hset(id, 'last_name', str(user['last_name']))
+        # redis_cache.hset(id, 'email', str(user['email']))
+        # redis_cache.expire(id, 30)
+        return jsonify( {'token': str(user['_id'])}), 200
     else:
-        return 'Email or password incorrect', 400
+        return 'Email or password incorrect', 401
 ### Creates a user
 @app.route('/create_user', methods=['POST'])
 def create_user():
     # Checking if email already in DB
     user_exists = mongo.db.users.find_one({'email': request.json['email']})
     if user_exists:
-        return 'Email already in use', 400
+        return 'Email already in use', 401
     # Checking if passwords dont match
     if request.json['password'] != request.json['password2']:
-        return "Passwords don't match", 400
+        return "Passwords don't match", 401
     id = mongo.db.users.insert(
         {
             'first_name': request.json['first_name'],
