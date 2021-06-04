@@ -69,10 +69,10 @@ def signin():
     # Checking if email already in DB
     user_exists = mongo.db.users.find_one({'email': request.json['email']})
     if user_exists:
-        return 'Email already in use', 401
+        return 'Email already in use', 400
     # Checking if passwords dont match
     if request.json['password'] != request.json['password2']:
-        return "Passwords don't match", 401
+        return "Passwords don't match", 402
     id = mongo.db.users.insert(
         {
             'first_name': request.json['firstName'],

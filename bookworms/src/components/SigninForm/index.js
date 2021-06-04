@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Form, Button } from 'react-bootstrap'
+import { Card, Form, Button, Alert } from 'react-bootstrap'
 import { Link, useHistory } from 'react-router-dom';
 import auth from '../../auth/Auth';
 
@@ -9,6 +9,7 @@ const SigninForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
+    const [error, setError] = useState('');
     const history = useHistory();
 
     const handleSubmit = async (e) =>{
@@ -25,15 +26,27 @@ const SigninForm = () => {
                 password,
                 password2
             })
-        }).then( res => { return res.json()})
-        .then(data => {
+        })
+        .then( async res => {
+            if(!res.ok){
+                if(res.status == 400){
+                    throw new Error('Email already in use');
+                }
+                else{
+                    throw new Error("Passwords don't match");
+                }
+                
+            }
+            let data = await res.json();
+            return data;
+        })
+        .then( data => {
             console.log(data.token);
             localStorage.setItem('token', data.token);
             auth.login(()=>{console.log('logged in')});
             history.push('/')
-        }).catch( err => {
-            console.log(err);
         })
+        .catch( err => setError(err.message))
     }
 
     return (
@@ -93,6 +106,12 @@ const SigninForm = () => {
                             value={password2}
                             />
                     </Form.Group>
+                    {
+                        error &&
+                            <Alert variant='danger' onClose={() => setError('')} dismissible>
+                                {error}
+                            </Alert>
+                    }
                     <Button variant="outline-light" type="submit" block>
                         Signin
                     </Button>

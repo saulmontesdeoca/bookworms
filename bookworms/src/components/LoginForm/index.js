@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Form, Button } from 'react-bootstrap'
+import { Card, Form, Button, Alert } from 'react-bootstrap'
 import { Link, useHistory } from 'react-router-dom';
 import auth from '../../auth/Auth';
 
@@ -8,6 +8,8 @@ const apiRoute = process.env.DEV_API;
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
     const history = useHistory();
 
     const handleSubmit = async (e) =>{
@@ -21,17 +23,18 @@ const LoginForm = () => {
                 email,
                 password
             })
-        }).then( res => { return res.json()})
+        }).then( async res => { 
+            if(!res.ok){
+                throw new Error('User or password incorrect');
+            }
+            return await res.json();
+        })
         .then(data => {
             console.log(data.token);
             localStorage.setItem('token', data.token);
             auth.login(()=>{console.log('logged in')});
-            history.push('/')
-        }).catch( err => {
-            console.log(err);
-        })
-        console.log('Email:' + email + ' and pass: ' + password);
-        // console.log(res.data);
+            history.push('/');
+        }).catch( err => setError(err.message));
     }
 
     return (
@@ -62,6 +65,12 @@ const LoginForm = () => {
                             value={password}
                             />
                     </Form.Group>
+                    {
+                        error &&
+                            <Alert variant='danger' onClose={() => setError('')} dismissible>
+                                {error}
+                            </Alert>
+                    }
                     <Button variant="outline-light" type="submit" block>
                         Login
                     </Button>
