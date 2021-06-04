@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Card, Image, Row, Col } from 'react-bootstrap';
 import ReactStars from "react-rating-stars-component";
 

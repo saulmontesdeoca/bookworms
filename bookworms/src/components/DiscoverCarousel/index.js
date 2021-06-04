@@ -58,7 +58,7 @@ const DiscoverCarousel = (props) => {
                 removeArrowOnDeviceType={["mobile"]}
                 deviceType={'desktop'}
             >
-            {recomendations ? recomendations.map( (book, key) =>{
+            {recomendations ? recomendations.slice(0, recomendations.length/3).map( (book, key) =>{
                 if(book != null){
                   if(!(book.image_url === 'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png')){
                     return <Link to={`/book/${book.book_id}`}>
@@ -66,6 +66,7 @@ const DiscoverCarousel = (props) => {
                   </Link>
                   }
                 }
+                return null
               }): null}
         </Carousel>
         </div>

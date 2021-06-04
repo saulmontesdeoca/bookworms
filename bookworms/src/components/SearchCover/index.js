@@ -1,8 +1,6 @@
 import React from 'react';
 import { Card, Image, Form, InputGroup, Button  } from 'react-bootstrap';
 import SearchIcon from '@material-ui/icons/Search';
-import { fade, makeStyles } from '@material-ui/core/styles';
-
 
 const SearchCover = () => {
 

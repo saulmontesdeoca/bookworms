@@ -40,6 +40,17 @@ const Discover = () => {
         <Layout>
             <PageCover img="images/books-white.png" title="Discover"/>
             {
+                misteryBooks &&
+                <>
+                <Container style={{marginTop: 80, marginBottom: 50}}>
+                    <Row>
+                        <h3>Best of mistery</h3>
+                    </Row>
+                </Container>
+                <DiscoverCarousel books={misteryBooks}/>
+                </>
+            }
+            {
                 romanticBooks &&
                 <>
                     <Container style={{marginTop: 80}}>
@@ -61,17 +72,7 @@ const Discover = () => {
                     <DiscoverCarousel books={fictionBooks}/>
                 </>
             }
-            {
-                misteryBooks &&
-                <>
-                <Container style={{marginTop: 80, marginBottom: 50}}>
-                    <Row>
-                        <h3>Best of mistery</h3>
-                    </Row>
-                </Container>
-                <DiscoverCarousel books={misteryBooks}/>
-                </>
-            }
+
         </Layout>
     );
 };
