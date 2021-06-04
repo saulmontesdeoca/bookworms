@@ -17,14 +17,34 @@ redis_cache = redis.Redis(host='redis-10597.c261.us-east-1-4.ec2.cloud.redislabs
 
 @app.route('/redis/<id>', methods=['POST'])
 def redis(id):
+    print(redis_cache.dbsize())
     if redis_cache.exists(id):
         return 'user exists'
     else:
         print('User does not exists adding it to cache')
+        print(redis_cache.dbsize())
         redis_cache.hset(id, 'name', id)
         redis_cache.expire(id, 10)
         return 'User does not exists adding it to cache'
-    
+
+### cache redis
+@app.route('/session/<token>', methods=['GET'])
+def get_session(token):
+    if redis_cache.exists(token):
+        print('user exists')
+        return 'user exists', 200
+    else:
+        print('User does not exists adding it to cache')
+        ### get info from mongo
+        user = mongo.db.users.find_one({'_id': ObjectId(token)})
+        redis_cache.hset(token, 'token', token)
+        redis_cache.hset(token, 'email', str(user['email']))
+        redis_cache.expire(token, 60)
+        tok = redis_cache.hget(token, 'token')
+        em = redis_cache.hget(token, 'email')
+        print(f'Token: {tok}')
+        print(f'Email: {em}')
+        return 'User does not exists adding it to cache', 400
 
 ################ Login/Signin stuff ##################
 ### Login check
@@ -42,9 +62,10 @@ def login():
         return jsonify( {'token': str(user['_id'])}), 200
     else:
         return 'Email or password incorrect', 401
+
 ### Creates a user
-@app.route('/create_user', methods=['POST'])
-def create_user():
+@app.route('/signin', methods=['POST'])
+def signin():
     # Checking if email already in DB
     user_exists = mongo.db.users.find_one({'email': request.json['email']})
     if user_exists:
@@ -54,13 +75,13 @@ def create_user():
         return "Passwords don't match", 401
     id = mongo.db.users.insert(
         {
-            'first_name': request.json['first_name'],
-            'last_name': request.json['last_name'],
+            'first_name': request.json['firstName'],
+            'last_name': request.json['lastName'],
             'email': request.json['email'],
             'password': sha256_crypt.encrypt(request.json['password'])
         }
     )
-    return f'{str(ObjectId(id))}'
+    return jsonify( {'token': str(ObjectId(id))}), 200
 
 ### gets a user by id
 @app.route('/user/<id>', methods=['GET'])

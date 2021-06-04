@@ -1,9 +1,18 @@
 import React from 'react';
 import { Navbar, Nav, Dropdown, Image } from 'react-bootstrap';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import auth from '../../auth/Auth';
 
-const NavBar = () => {
+const NavBar = (props) => {
     const location = useLocation();
+    const history = useHistory();
+
+    const handleLogout = () => {
+        auth.logout(() => {
+            console.log('User logged out');
+            history.push('/login');
+        })
+    }
     return (
         <Navbar style={{backgroundColor: '#fff', height: 100}}>
             <Nav className="mr-auto">
@@ -41,7 +50,7 @@ const NavBar = () => {
                 <Dropdown.Menu style={{marginRight: 100}}>
                     <Dropdown.Item><Link to="/profile" className="text-decoration-none text-dark">Profile</Link></Dropdown.Item>
                     <Dropdown.Divider />
-                    <Dropdown.Item><Link to="/signout" className="text-decoration-none text-dark">Signout</Link></Dropdown.Item>
+                    <Dropdown.Item><a onClick={handleLogout} className="text-decoration-none text-dark">Signout</a></Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
         </Navbar>

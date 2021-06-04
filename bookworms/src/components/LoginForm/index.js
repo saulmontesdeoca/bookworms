@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Form, Button } from 'react-bootstrap'
 import { Link, useHistory } from 'react-router-dom';
+import auth from '../../auth/Auth';
 
 const apiRoute = process.env.DEV_API;
 
@@ -23,7 +24,8 @@ const LoginForm = () => {
         }).then( res => { return res.json()})
         .then(data => {
             console.log(data.token);
-            localStorage.setItem('token', data.token)
+            localStorage.setItem('token', data.token);
+            auth.login(()=>{console.log('logged in')});
             history.push('/')
         }).catch( err => {
             console.log(err);
