@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from 'react-multi-carousel';
 import BookshelfCard from '../BookshelfCard';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import auth from '../../auth/Auth';
 
 const responsive = {
     desktop: {
@@ -21,18 +22,30 @@ const responsive = {
   };
 const BookCarousel = (props) => {
   const [recomendations, setRecomendations] = useState([])
-  
+  const history = useHistory();
   let myBooks = [25124132,6578787,396103,16248942, 17434747,16248942];
 
   async function fetchBooks(){
       let recom = []
       for (let i=0; i < myBooks.length; i++){
-        await fetch(`/find_book/${myBooks[i]}`).then( res => {
+        await fetch(`/find_book/${myBooks[i]}`,
+        {
+          credentials: 'include'
+        }
+        ).then( res => {
+          if(res.status == 408){
+            // this means the session has expired, logout and redirect to login
+            auth.logout(() => {
+              document.cookie = "token="
+            })
+            history.push('/login')
+          } else{
           res.json().then(data => {
             let auths = fetchAuthors(data.authors);
             data.authors = auths;
             recom.push(data)
-        })})
+          }
+        )}})
       }
 
       setRecomendations(recom);

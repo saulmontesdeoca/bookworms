@@ -3,8 +3,6 @@ import { Card, Form, Button, Alert } from 'react-bootstrap'
 import { Link, useHistory } from 'react-router-dom';
 import auth from '../../auth/Auth';
 
-const apiRoute = process.env.DEV_API;
-
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,9 +28,11 @@ const LoginForm = () => {
             return await res.json();
         })
         .then(data => {
-            console.log(data.token);
-            localStorage.setItem('token', data.token);
-            auth.login(()=>{console.log('logged in')});
+            auth.login(()=>{
+                console.log('logged in');
+                localStorage.setItem('token', data.token);
+                document.cookie = `token=${data.token}`
+            });
             history.push('/');
         }).catch( err => setError(err.message));
     }

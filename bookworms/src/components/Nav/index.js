@@ -8,8 +8,14 @@ const NavBar = (props) => {
     const history = useHistory();
 
     const handleLogout = () => {
-        auth.logout(() => {
+        auth.logout( async () => {
+            // TODO: Fetch to delete redis session
+            await fetch('/logout',{
+                method: 'POST',
+                credentials: 'include'
+            }) 
             console.log('User logged out');
+            document.cookie = "token="
             history.push('/login');
         })
     }

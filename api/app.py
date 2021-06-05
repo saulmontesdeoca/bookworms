@@ -54,11 +54,12 @@ def login():
     if not user:
         return 'Email or password incorrect', 401
     if sha256_crypt.verify(str(request.json['password']), user['password']):
-        # redis_cache.hset(id, 'id', id)
-        # redis_cache.hset(id, 'first_name', b"f'{str(user['first_name'])}'")
-        # redis_cache.hset(id, 'last_name', str(user['last_name']))
-        # redis_cache.hset(id, 'email', str(user['email']))
-        # redis_cache.expire(id, 30)
+        id = user['_id']
+        redis_cache.hset(str(id), 'id', str(id))
+        redis_cache.hset(str(id), 'first_name', str(user['first_name']))
+        redis_cache.hset(str(id), 'last_name', str(user['last_name']))
+        redis_cache.hset(str(id), 'email', str(user['email']))
+        redis_cache.expire(str(id), 30)
         return jsonify( {'token': str(user['_id'])}), 200
     else:
         return 'Email or password incorrect', 401
@@ -81,14 +82,20 @@ def signin():
             'password': sha256_crypt.encrypt(request.json['password'])
         }
     )
-    return jsonify( {'token': str(ObjectId(id))}), 200
+    return jsonify( {'token': str(id)}), 200
+### Logout check
+@app.route('/logout', methods=['POST'])
+def logout():
+    token = request.cookies.get('token')
+    redis_cache.expire(str(token), 0)
+    return 'Done', 200
 
 ### gets a user by id
 @app.route('/user/<id>', methods=['GET'])
 def get_user(id):
     user = mongo.db.users.find_one({'_id': ObjectId(id)})
     return jsonify({
-        '_id': str(ObjectId(id)),
+        '_id': str(id),
         'first_name': user['first_name'],
         'last_name': user['last_name'],
         'email': user['email'],
@@ -107,6 +114,10 @@ def delete_user(id):
 # Get a book by book_id
 @app.route('/find_book/<id>', methods=['GET'])
 def get_book(id):
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
     books = mongo.db.books
     book = books.find_one({'book_id': id})
     book = json_util.dumps(book)
