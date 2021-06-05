@@ -1,11 +1,18 @@
 import React from 'react';
 import Layout from '../../components/Layout';
+import Helmet from 'react-helmet';
+import auth from '../../auth/Auth';
 
 const Home = () => {
     return (
-        <Layout>
-            Hello from home
-        </Layout>
+        <>
+            <Helmet>
+                <title>BookWorms. - Home</title>
+            </Helmet>
+            <Layout>
+                {auth.getToken()}
+            </Layout>
+        </>
     );
 };
 
