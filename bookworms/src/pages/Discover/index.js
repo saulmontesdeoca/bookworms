@@ -7,34 +7,55 @@ import { Row, Container } from 'react-bootstrap';
 
 const Discover = () => {
     const [romanticBooks, setRomanticBooks] = useState([]);
-    const [fictionBooks, setFictionBooks] = useState([]);
+    const [fantasyBooks, setFantasyBooks] = useState([]);
     const [misteryBooks, setMisteryBooks] = useState([]);
+    const [classicBooks, setClassicBooks] = useState([]);
 
     useEffect(() => {
         const fetchRomanticBooks = async () => {
-            await fetch('/get_romantic')
+            await fetch('/getBooks/romance',{
+                credentials: 'include'
+            })
             .then( res => { res.json()
               .then(data => {
-                setRomanticBooks(data.books);
+                console.log(data);
+                setRomanticBooks(data);
               })})
         }
-        const fetchFictionBooks = async () => {
-            await fetch('/get_fiction')
+        const fetchfantasyBooks = async () => {
+            await fetch('/getBooks/fantasy',{
+                credentials: 'include'
+            })
             .then( res => { res.json()
               .then(data => {
-                setFictionBooks(data.books);
+                console.log(data);
+                setFantasyBooks(data);
               })})
         }
         const fetchMisteryBooks = async () => {
-            await fetch('/get_mistery')
+            await fetch('/getBooks/mistery',{
+                credentials: 'include'
+            })
             .then( res => { res.json()
               .then(data => {
-                setMisteryBooks(data.books);
+                console.log(data);
+                setMisteryBooks(data);
+              })})
+        }
+        const fetchClassicBooks = async () => {
+            await fetch('/getBooks/classics',{
+                credentials: 'include'
+            })
+            .then( res => { res.json()
+              .then(data => {
+                  console.log(data);
+                setClassicBooks(data);
               })})
         }
         fetchRomanticBooks();  
-        fetchFictionBooks(); 
-        fetchMisteryBooks(); 
+        fetchfantasyBooks(); 
+        fetchMisteryBooks();
+        fetchClassicBooks();
     },[]);
 
     return (
@@ -44,6 +65,17 @@ const Discover = () => {
             </Helmet>
             <Layout>
                 <PageCover img="images/books-white.png" title="Discover"/>
+                {
+                    fantasyBooks &&
+                    <>
+                        <Container style={{marginTop: 80}}>
+                            <Row>
+                                <h3>Most popular fantasy books</h3>
+                            </Row>
+                        </Container>
+                        <DiscoverCarousel books={fantasyBooks}/>
+                    </>
+                }
                 {
                     misteryBooks &&
                     <>
@@ -67,14 +99,14 @@ const Discover = () => {
                     </>
                 }
                 {
-                    fictionBooks &&
+                    classicBooks &&
                     <>
                         <Container style={{marginTop: 80}}>
                             <Row>
-                                <h3>New releases fiction books</h3>
+                                <h3>Classic books</h3>
                             </Row>
                         </Container>
-                        <DiscoverCarousel books={fictionBooks}/>
+                        <DiscoverCarousel books={classicBooks}/>
                     </>
                 }
             </Layout>

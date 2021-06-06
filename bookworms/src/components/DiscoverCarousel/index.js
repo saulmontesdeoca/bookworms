@@ -22,26 +22,7 @@ const responsive = {
   };
 
 const DiscoverCarousel = (props) => {
-
-    const [recomendations, setRecomendations] = useState([]);
-
-    useEffect( () =>{
-      const fetchBooks = async () => {
-        let recom = []
-        for (let i=0; i < props.books.length; i++){
-          await fetch(`/find_book/${props.books[i]}`).then( res => {
-            res.json().then(data => {
-              recom.push(data);
-              // console.log(data);
-          })})
-        }
-  
-        setRecomendations(recom);
-    }
-    fetchBooks();  
-},[props.books]);
-
-    
+    const books = props.books;
     return (
         <div>
             <Carousel
@@ -51,23 +32,29 @@ const DiscoverCarousel = (props) => {
                 responsive={responsive}
                 ssr={true} // means to render carousel on server-side.
                 autoPlay={false}
-                keyBoardControl={false}
+                keyBoardControl={true}
                 transitionDuration={500}
                 additionalTransfrom={250}
                 containerClass='carousel-container-with-scrollbar'
                 removeArrowOnDeviceType={["mobile"]}
                 deviceType={'desktop'}
             >
-            {recomendations ? recomendations.slice(0, recomendations.length/3).map( (book, key) =>{
-                if(book != null){
-                  if(!(book.image_url === 'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png')){
-                    return <Link to={`/book/${book.book_id}`}>
+            {books && books.map( (book, key) =>(
+                  <Link to={`/book/${book.book_id}`}>
                     <BookCover key={key} cover={book.image_url}/>
-                  </Link>
-                  }
-                }
-                return null
-              }): null}
+                  </Link> 
+                  ) )
+            }
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
         </Carousel>
         </div>
     );

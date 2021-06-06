@@ -19,56 +19,12 @@ const responsive = {
       items: 1,
       slidesToSlide: 1 // optional, default to 1.
     }
-  };
+};
+
 const BookCarousel = (props) => {
-  const [recomendations, setRecomendations] = useState([])
-  const history = useHistory();
-  let myBooks = [25124132,6578787,396103,16248942, 17434747,16248942];
+  const books = props.books;
 
-  async function fetchBooks(){
-      let recom = []
-      for (let i=0; i < myBooks.length; i++){
-        await fetch(`/find_book/${myBooks[i]}`,
-        {
-          credentials: 'include'
-        }
-        ).then( res => {
-          if(res.status == 408){
-            // this means the session has expired, logout and redirect to login
-            auth.logout(() => {
-              document.cookie = "token="
-            })
-            history.push('/login')
-          } else{
-          res.json().then(data => {
-            let auths = fetchAuthors(data.authors);
-            data.authors = auths;
-            recom.push(data)
-          }
-        )}})
-      }
-
-      setRecomendations(recom);
-  }
-
-  function fetchAuthors(authors){
-      let auths = []
-      for(let i =0; i< authors.length; i++){
-          fetch(`/find_author/${authors[i].author_id}`).then( res => {
-              res.json().then( author => {
-                  auths.push(author.name)
-              })
-          })
-      }
-      return auths
-  }
-
-    useEffect( () =>{
-        fetchBooks();
-    },[]);
-
-    if (recomendations){
-      return (
+    return (
         <Carousel
         className='my-5 pr-5'
         swipeable={true}
@@ -81,23 +37,14 @@ const BookCarousel = (props) => {
         containerClass="carousel-container"
         removeArrowOnDeviceType={["mobile"]}
         deviceType={'desktop'}
-    >
-      {recomendations.map( (book, key) =>(
-          <Link key={key} to={`/book/${book.book_id}`}>
-            <BookshelfCard cover={book.image_url} title={book.title} authors={book.authors} rating={book.average_rating}/>
-          </Link>
-      ))}
-</Carousel>
-      )
-    }
-    else{
-      return (
-      
-          <></>
-    
-    
-        );
-    }
+      >
+          {books.map( (book, key) =>(
+              <Link key={key} to={`/book/${book.book_id}`}>
+                <BookshelfCard cover={book.image_url} title={book.title} authors={book.authors} rating={book.average_rating}/>
+              </Link>
+          ))}
+      </Carousel>
+    )
   
 
 };
