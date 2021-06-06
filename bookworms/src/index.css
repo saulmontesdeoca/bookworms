@@ -43,3 +43,12 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
 }
+.blur-intense {
+    /* Add the blur effect */
+    filter: blur(18px);
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
