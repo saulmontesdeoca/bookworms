@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Bigshot+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap');
 /* body: '#363537',
 text: '#FAFAFA',
 toggleBorder: '#6B8096',
@@ -51,4 +52,14 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+.book-title {
+    font-family: 'Alfa Slab One', cursive;
+    font-size: 400%;
+    color:rgb(85, 85, 85)
+}
+
+.book-authors {
+    color:dimgray
 }

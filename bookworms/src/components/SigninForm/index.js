@@ -37,13 +37,13 @@ const SigninForm = () => {
                 }
                 
             }
-            let data = await res.json();
-            return data;
+            return await res.json();
         })
         .then( data => {
             console.log(data.token);
             localStorage.setItem('token', data.token);
-            auth.login(()=>{console.log('logged in')});
+            document.cookie = `token=${data.token}`
+            auth.login(()=>{console.log('signed in and logged in')});
             history.push('/')
         })
         .catch( err => setError(err.message))

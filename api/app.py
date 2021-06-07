@@ -92,7 +92,12 @@ def signin():
             'first_name': request.json['firstName'],
             'last_name': request.json['lastName'],
             'email': request.json['email'],
-            'password': sha256_crypt.encrypt(request.json['password'])
+            'password': sha256_crypt.encrypt(request.json['password']),
+            'recommendations': [],
+            'read': [],
+            'currently_reading': [],
+            'want_read': [],
+
         }
     )
     if id:
@@ -135,6 +140,23 @@ def delete_user(id):
     else:
         return 'User not found', 404
 
+@app.route('/get_books', methods=['GET'])
+def get_books():
+    """
+    Gets all books in db.books
+    """
+    # Checking if session exists
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
+    # if it exist renew session time (user still active)
+    redis_cache.expire(str(token), SESSION_TIME)
+    books = mongo.db.books
+    books = books.find({})
+    books = json_util.dumps(books)
+    return Response(books, mimetype='application/json')
+
 @app.route('/find_book/<id>', methods=['GET'])
 def get_book(id):
     """
@@ -154,7 +176,7 @@ def get_book(id):
 
 # Get bookshelves
 @app.route('/getBooks/<genre>', methods=['GET'])
-def get_classics(genre):
+def get_books_by_genre(genre):
     """
     Gets books by genre
     """
@@ -168,6 +190,27 @@ def get_classics(genre):
     books = mongo.db.books
     docs = books.find({'genre': genre})
     docs = json_util.dumps(docs)
+    return Response(docs, mimetype='application/json')
+    
+
+@app.route('/getAuthorBooks', methods=['POST'])
+def get_author_books():
+    """
+    Gets all books of a given author
+    """
+    # Checking if session exists
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
+    # if it exist renew session time (user still active)
+    redis_cache.expire(str(token), SESSION_TIME)
+    books = mongo.db.books
+    author = request.json['author']
+    print(author)
+    docs = books.find({'authors': author})
+    docs = json_util.dumps(docs)
+    print(len(docs))
     return Response(docs, mimetype='application/json')
 
 @app.route('/mybookshelves/<bookshelf>', methods=['GET'])
@@ -200,5 +243,28 @@ def bookshelf_books(bookshelf):
     bookshelf_books = json_util.dumps(bookshelf_books)
     return Response(bookshelf_books, mimetype='application/json')
 
+@app.route('/mybookshelf/<action>', methods=['POST'])
+def edit_bookshelf(action):
+    """
+    Edits bookshelf of user
+    """
+    # Checking if session exists
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
+    # if it exist renew session time (user still active)
+    redis_cache.expire(str(token), SESSION_TIME )
+
+    #querying all documents
+    if action == 'add':
+        updated = mongo.db.users.update({'_id': ObjectId(token)}, {'$push': {request.json['bookshelf']: request.json['book_id']}} )
+    else:
+        updated = mongo.db.users.update({'_id': ObjectId(token)}, {'$pull': {request.json['bookshelf']: request.json['book_id']}})
+    print('before update')
+
+    if not updated:
+        return 'Server error', 500
+    return 'Updated', 200
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

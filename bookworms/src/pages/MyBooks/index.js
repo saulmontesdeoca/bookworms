@@ -13,30 +13,10 @@ const MyBooks = () => {
     const [myRecommendations, setMyRecommendations] = useState([]);
     const [wantRead, setWantRead] = useState([]);
     const [read, setRead] = useState([]);
+    const [currentlyReading, setCurrentlyReading] = useState([]);
 
-    const fetchRecommendations = async () => {
-        await fetch('/mybookshelves/recommendations', {credentials: 'include'})
-        .then( res => {
-            console.log('Resoponse');
-                if(res.status === 408){
-                    // this means the session has expired, logout and redirect to login
-                    auth.logout(() => {
-                        document.cookie = "token="
-                    })
-                    history.push('/login')
-                } 
-                else{
-                    res.json().then(data => {
-                        console.log('then');
-
-                        console.log(data);
-                        setMyRecommendations(data)
-                    })
-                }
-            })
-    }
-    const fetchWantRead = async () => {
-        await fetch('/mybookshelves/want_read', {credentials: 'include'})
+    const fetchBookshelf = async (bookshelf, setFunction) => {
+        await fetch(`/mybookshelves/${bookshelf}`, {credentials: 'include'})
         .then( res => {
                 if(res.status === 408){
                     // this means the session has expired, logout and redirect to login
@@ -47,33 +27,18 @@ const MyBooks = () => {
                 } 
                 else{
                     res.json().then(data => {
-                        setWantRead(data)
-                    })
-                }
-            })
-    }
-    const fetchRead = async () => {
-        await fetch('/mybookshelves/read', {credentials: 'include'})
-        .then( res => {
-                if(res.status === 408){
-                    // this means the session has expired, logout and redirect to login
-                    auth.logout(() => {
-                        document.cookie = "token="
-                    })
-                    history.push('/login')
-                } 
-                else{
-                    res.json().then(data => {
-                        setRead(data)
+                        setFunction(data)
                     })
                 }
             })
     }
 
     useEffect(() => {
-        fetchRecommendations();
-        fetchWantRead();
-        fetchRead();
+        fetchBookshelf('recommendations', setMyRecommendations);
+        fetchBookshelf('want_read', setWantRead);
+        fetchBookshelf('read', setRead);
+        fetchBookshelf('currently_reading', setCurrentlyReading);
+
     }, []);
 
     return (
@@ -89,6 +54,11 @@ const MyBooks = () => {
                         {myRecommendations && <p className='text-muted pt-2 pl-3' style={{fontSize: 24}}>- {myRecommendations.length} books</p>}
                     </Row>
                     <BookCarousel books={myRecommendations}/>
+                    <Row>
+                        <h1>Currently Reading</h1>
+                        {currentlyReading && <p className='text-muted pt-2 pl-3' style={{fontSize: 24}}>- {currentlyReading.length} books</p>}
+                    </Row>
+                    <BookCarousel books={currentlyReading}/>
                     <Row>
                         <h1 >Want to read</h1>
                         {wantRead && <p className='text-muted pt-2 pl-3' style={{fontSize: 24}}>- {wantRead.length} books</p>}

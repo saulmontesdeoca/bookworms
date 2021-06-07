@@ -18,7 +18,6 @@ const Discover = () => {
             })
             .then( res => { res.json()
               .then(data => {
-                console.log(data);
                 setRomanticBooks(data);
               })})
         }
@@ -28,7 +27,6 @@ const Discover = () => {
             })
             .then( res => { res.json()
               .then(data => {
-                console.log(data);
                 setFantasyBooks(data);
               })})
         }
@@ -38,7 +36,6 @@ const Discover = () => {
             })
             .then( res => { res.json()
               .then(data => {
-                console.log(data);
                 setMisteryBooks(data);
               })})
         }
@@ -48,7 +45,6 @@ const Discover = () => {
             })
             .then( res => { res.json()
               .then(data => {
-                  console.log(data);
                 setClassicBooks(data);
               })})
         }
@@ -73,7 +69,7 @@ const Discover = () => {
                                 <h3>Most popular fantasy books</h3>
                             </Row>
                         </Container>
-                        <DiscoverCarousel books={fantasyBooks}/>
+                        <DiscoverCarousel books={fantasyBooks} items={10} additionalTransfrom={250}/>
                     </>
                 }
                 {
@@ -84,7 +80,7 @@ const Discover = () => {
                             <h3>Best of mistery</h3>
                         </Row>
                     </Container>
-                    <DiscoverCarousel books={misteryBooks}/>
+                    <DiscoverCarousel books={misteryBooks} items={10} additionalTransfrom={250}/>
                     </>
                 }
                 {
@@ -95,7 +91,7 @@ const Discover = () => {
                                 <h3>Romance bookshelf</h3>
                             </Row>
                         </Container>
-                        <DiscoverCarousel books={romanticBooks}/>
+                        <DiscoverCarousel books={romanticBooks} items={10} additionalTransfrom={250}/>
                     </>
                 }
                 {
@@ -106,7 +102,7 @@ const Discover = () => {
                                 <h3>Classic books</h3>
                             </Row>
                         </Container>
-                        <DiscoverCarousel books={classicBooks}/>
+                        <DiscoverCarousel books={classicBooks} items={10} additionalTransfrom={250}/>
                     </>
                 }
             </Layout>
