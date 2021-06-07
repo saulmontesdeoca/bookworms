@@ -3,12 +3,12 @@ import { Card, Image } from 'react-bootstrap';
 
 const BookInfoHeader = (props) => {
     return (
-        <div style={{position: 'relative', margin: 20, height: '28rem', overflow:'hidden', borderRadius: '3%'}}>
+        <div style={{position: 'relative', margin: 20, width: '7rem', height: '9rem', overflow:'hidden', borderRadius: '4%'}}>
             <Image draggable={false} className='blur-intense' src={props.cover} fluid style={{height: '100%', width: '100%', objectFit: 'cover'}} rounded />
             <Card style={{ 
                     position: 'absolute', 
-                    width:'80%',
-                    height:'80%', 
+                    width:'70%',
+                    height:'90%', 
                     bottom: 0,
                     top: 0, 
                     alignSelf: 'center', 

@@ -4,7 +4,7 @@ import ReactStars from "react-rating-stars-component";
 
 const BookshelfCard = (props) => {
     return (
-        <div style={{position: 'relative', margin: 20, height: '14rem', overflow:'hidden', borderRadius: '10'}}>
+        <div style={{position: 'relative', margin: 20, height: '14rem', overflow:'hidden', borderRadius: '3%'}}>
             <Image draggable={false} className='blur' src={props.cover} fluid style={{height: '100%', width: '100%', objectFit: 'cover'}} rounded />
             <Card style={{ 
                     position: 'absolute', 

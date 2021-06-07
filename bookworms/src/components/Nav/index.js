@@ -20,7 +20,7 @@ const NavBar = (props) => {
         })
     }
     return (
-        <Navbar style={{backgroundColor: '#fff', height: 100}}>
+        <Navbar sticky="top" style={{backgroundColor: '#fff', height: 100}}>
             <Nav className="mr-auto">
                 <Navbar.Brand className="title-logo" style={{color: '#294965', marginLeft: 200, marginRight: 300, fontSize: 24}}>BookWorms.</Navbar.Brand>
                 <Link 

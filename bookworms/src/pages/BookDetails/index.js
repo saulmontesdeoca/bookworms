@@ -163,6 +163,7 @@ const BookDetails = () => {
                             </Col>
                             <Col className='pt-4'>
                                 <h1 className='book-title'>{bookInfo.title}</h1>
+                                <div style={{backgroundColor: 'rgb(85, 85, 85)', height: 8, width: 28, marginTop: 18}}></div>
                                 <Row >
                                     <Col>
                                         <Row className='my-3'>
@@ -173,7 +174,7 @@ const BookDetails = () => {
                                                 <Row className='pl-3'>
                                                     <ReactStars
                                                         count={5}
-                                                        value={bookInfo.average_rating*1}
+                                                        value={4.5}
                                                         isHalf= {true}
                                                         size={24}
                                                         activeColor="#294965"
@@ -234,6 +235,7 @@ const BookDetails = () => {
                         moreAuthorBooks && moreAuthorBooks.length > 0 &&
                         <Container className='mt-5 pt-3'>
                             <h2 style={{fontFamily: 'Alfa Slab One', color: 'rgb(85, 85, 85)'}}>More of {bookInfo.authors}</h2>
+                            <div style={{backgroundColor: 'rgb(85, 85, 85)', height: 5, width: 48, marginTop: 8}}></div>
                             <DiscoverCarousel books={moreAuthorBooks} items={6} additionalTransfrom={10}/>
                         </Container>
                     }
@@ -241,6 +243,7 @@ const BookDetails = () => {
                         moreGenreBooks && moreGenreBooks.length > 0 &&
                         <Container className='my-5 py-5'>
                             <h2 style={{fontFamily: 'Alfa Slab One', color: 'rgb(85, 85, 85)'}}>Explore other {bookInfo.genre} books</h2>
+                            <div style={{backgroundColor: 'rgb(85, 85, 85)', height: 5, width: 48, marginTop: 8}}></div>
                             <BookCarousel books={moreGenreBooks}/>
                         </Container>
                     }
