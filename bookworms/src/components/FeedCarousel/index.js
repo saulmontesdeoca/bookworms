@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Carousel from 'react-multi-carousel';
 import FeedCarouselBook from '../FeedCarouselBook';
@@ -39,7 +39,7 @@ const FeedCarousel = (props) => {
                 deviceType={'desktop'}
             >
             {books && books.map( (book, key) =>(
-                  <Link to={`/book/${book.book_id}`}>
+                  <Link key={key} to={`/book/${book.book_id}`}>
                     <FeedCarouselBook key={key} cover={book.image_url}/>
                   </Link> 
                   ) )

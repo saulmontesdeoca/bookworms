@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Carousel from 'react-multi-carousel';
 import BookshelfCard from '../BookshelfCard';
-import { Link, useHistory } from 'react-router-dom';
-import auth from '../../auth/Auth';
+import { Link } from 'react-router-dom';
 
 const responsive = {
     desktop: {

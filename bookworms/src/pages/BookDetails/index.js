@@ -70,6 +70,8 @@ const BookDetails = () => {
             case 'Currently Reading':
                 bookshelf = 'currently_reading'
                 break;
+            default:
+                break;
         }
         await fetch(`/mybookshelf/${action}`, {
             credentials: 'include',
@@ -92,7 +94,7 @@ const BookDetails = () => {
                 credentials: 'include'
             }
             ).then( res => {
-                if(res.status == 408){
+                if(res.status === 408){
                 auth.logout(() => {
                     document.cookie = "token="
                     })
@@ -103,7 +105,7 @@ const BookDetails = () => {
                         setBookInfo(book);
                         await fetch(`/getBooks/${book.genre}`, {credentials: 'include'})
                         .then( res => {
-                            if(res.status == 408){
+                            if(res.status === 408){
                             auth.logout(() => {
                                 document.cookie = "token="
                                 })
@@ -127,7 +129,7 @@ const BookDetails = () => {
                             })
                         })
                         .then( res => {
-                            if(res.status == 408){
+                            if(res.status === 408){
                             auth.logout(() => {
                                 document.cookie = "token="
                                 })

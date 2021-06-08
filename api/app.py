@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, redirect
 from flask import jsonify
 from flask import request
@@ -97,7 +98,6 @@ def signin():
             'read': [],
             'currently_reading': [],
             'want_read': [],
-
         }
     )
     if id:
@@ -117,6 +117,31 @@ def logout():
     token = request.cookies.get('token')
     redis_cache.expire(str(token), 0)
     return 'Done', 200
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    """
+    Gets all users
+    """
+    users = mongo.db.users.find({})
+    if users:
+        doc = json_util.dumps(users)
+        return Response(doc, mimetype='application/json')
+    return 'Users not found', 404
+
+@app.route('/users', methods=['POST'])
+def get_userss():
+    """
+    Gets all users
+    """
+    users = []
+    for follow in request.json['following']:
+        user = mongo.db.users.find_one({'_id': ObjectId(follow)})
+        users.append(user)
+    if users:
+        doc = json_util.dumps(users)
+        return Response(doc, mimetype='application/json')
+    return 'Users not found', 404
 
 @app.route('/user/<id>', methods=['GET'])
 def get_user(id):
@@ -259,6 +284,15 @@ def edit_bookshelf(action):
     #querying all documents
     if action == 'add':
         updated = mongo.db.users.update({'_id': ObjectId(token)}, {'$push': {request.json['bookshelf']: request.json['book_id']}} )
+        post = mongo.db.users.update(
+            {'_id': ObjectId(token)}, 
+            {'$push': {'posts': {
+                        'action': 'add',
+                        'bookshelf': request.json['bookshelf'],
+                        'date': datetime.now(),
+                        'book': request.json['book_id']
+                    }}
+            })
     else:
         updated = mongo.db.users.update({'_id': ObjectId(token)}, {'$pull': {request.json['bookshelf']: request.json['book_id']}})
     print('before update')
@@ -266,5 +300,47 @@ def edit_bookshelf(action):
     if not updated:
         return 'Server error', 500
     return 'Updated', 200
+
+@app.route('/posts', methods=['GET'])
+def get_posts():
+    """
+    Gets posts from followers
+    """
+    # Checking if session exists
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
+    # if it exist renew session time (user still active)
+    redis_cache.expire(str(token), SESSION_TIME )
+
+    user = mongo.db.users.find_one({'_id': ObjectId(token)})
+    follwing = user['following']
+    posts = []
+    for follow in follwing:
+        foll = mongo.db.users.find_one({'_id': ObjectId(follow)})
+        for post in foll['posts']:
+            book = mongo.db.books.find_one({'book_id': post['book']})
+            post_to_add = {
+                'user_id': follow,
+                'first_name': foll['first_name'],
+                'last_name': foll['last_name'],
+                'bookshelf': post['bookshelf'],
+                'date': post['date'],
+                'book_id': post['book'],
+                'book_img': book['image_url'],
+                'book_title': book['title'],
+                'authors': book['authors'],
+                'rating': book['average_rating']
+            }
+            posts.append(post_to_add)
+
+    posts = json_util.dumps(posts)
+
+    if not posts:
+        return 'No posts found', 404
+
+    return Response(posts, mimetype='application/json')
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -2,16 +2,26 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import Helmet from 'react-helmet';
 import auth from '../../auth/Auth';
-import { useHistory, Link } from 'react-router-dom';
-import { Container, Row, Col, Spinner } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
+import { Container, Row, Col, Spinner, Card, ListGroup } from 'react-bootstrap';
 import FeedCarousel from '../../components/FeedCarousel';
-import BookshelfCard from '../../components/BookshelfCard';
+import PostCard from '../../components/PostCard';
+import FollowingCard from '../../components/FollowingCard';
+import BookshelfResume from '../../components/BookshelfResume';
 
 const Home = () => {
     const [books, setBooks] = useState([]);
     const [user, setUser] = useState({});
-    const history = useHistory();
+    const [myRecommendations, setMyRecommendations] = useState([]);
+    const [wantRead, setWantRead] = useState([]);
+    const [read, setRead] = useState([]);
+    const [currentlyReading, setCurrentlyReading] = useState([]);
+    const [following, setFollowing] = useState([]);
+    const [posts, setPosts] = useState([]);
+    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const history = useHistory();
 
     const fetchBooks = async () => {
         await fetch('/get_books', {credentials: 'include'})
@@ -25,7 +35,7 @@ const Home = () => {
                 } 
                 else{
                     res.json().then(data => {
-                        setBooks(data)
+                        setBooks(data);
                     })
                 }
             })
@@ -42,15 +52,71 @@ const Home = () => {
                 } 
                 else{
                     res.json().then(data => {
-                        setLoading(false);
                         setUser(data)
+                        setMyRecommendations(data.recommendations);
+                        setWantRead(data.want_read);
+                        setRead(data.read);
+                        setCurrentlyReading(data.currently_reading);
+                        setFollowing(data.following);
                     })
                 }
             })
     }
+    
+
+    const fetchPosts = async () => {
+        await fetch('/posts', {credentials: 'include'})
+        .then( res => {
+            if(res.status === 408){
+                // this means the session has expired, logout and redirect to login
+                auth.logout(() => {
+                })
+                document.cookie = "token="
+                history.push('/login')
+            } 
+            else{
+                res.json().then(data => {
+                    setPosts(data);
+                    console.log(posts);
+                    setLoading(false);
+                })
+            }
+        })
+    }
+    const getUsers = async () => {
+        await fetch('/users', {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                following,
+            })
+        })
+        .then( res => {
+            if(res.status === 408){
+                // this means the session has expired, logout and redirect to login
+                auth.logout(() => {
+                })
+                document.cookie = "token= "
+                history.push('/login')
+            } 
+            else{
+                res.json().then(data => {
+                    setUsers(data);
+                    console.log(data);
+                    console.log(users);
+                })
+            }
+        })
+    }
+
     useEffect(() => {
         fetchBooks();
         fetchUser();
+        getUsers();
+        fetchPosts();
     }, []);
     return (
         <>
@@ -61,10 +127,10 @@ const Home = () => {
                 <Container fluid>
                     <Row>
                         <Col style={{position: 'fixed', width: '30%', height: '100vh', paddingLeft: 80}}>
-                            <h5 style={{fontFamily: 'Alfa Slab One', color: 'rgb(85, 85, 85)', marginLeft: 18, paddingBottom: 0, marginTop: 20}}>Your bookshelf resume, {user  ? `${user.first_name}` : null}</h5>
-                            <div style={{backgroundColor: 'rgb(85, 85, 85)', height: 5, width: 28, marginLeft: 18}}></div>
-                            {  <p>{user.recommendations}</p>
+                            { myRecommendations && wantRead && read && currentlyReading && user &&
+                                <BookshelfResume first_name={user.first_name} myRecommendations={myRecommendations} wantRead={wantRead} read={read} currentlyReading={currentlyReading} />
                             }
+                            
                         </Col>
                         <Col style={{marginLeft: '30%', marginRight: '30%', overflow: 'hidden'}}>
                             <h5 style={{fontFamily: 'Alfa Slab One', color: 'rgb(85, 85, 85)', marginLeft: 18, paddingBottom: 0, marginTop: 20}}>Explore</h5>
@@ -83,14 +149,14 @@ const Home = () => {
                                     <Spinner animation="border" variant="secondary" />
                                 </div>
                                 :
-                                books.map( (book, key) =>(
-                                    <Link key={key} to={`/book/${book.book_id}`}>
-                                      <BookshelfCard cover={book.image_url} title={book.title} authors={book.authors} rating={book.average_rating}/>
-                                    </Link>
+                                posts ?
+                                posts.map( (post, key) =>(
+                                    <PostCard key={key} post={post}/>
                                 ))
-                                // <div className='d-flex justify-content-center' style={{paddingTop:90, paddingBottom:70}}>
-                                //     <p className='text-omited'>No Posts found</p>
-                                // </div>
+                                :
+                                <div className='d-flex justify-content-center' style={{paddingTop:90, paddingBottom:70, color: 'rgb(85, 85, 85)'}}>
+                                    <p className='text-omited'>No Posts found</p>
+                                </div>
                             }
                         </Col>
                         <Col style={{position: 'fixed', width: '30%', right: 0, height: '100vh'}}>
@@ -101,7 +167,10 @@ const Home = () => {
                                     <Spinner animation="border" variant="secondary" />
                                 </div>
                                 :
-                                <div className='d-flex justify-content-center' style={{paddingTop:60, paddingBottom:70}}>
+                                users ? 
+                                <FollowingCard users={users}/>
+                                :
+                                <div className='d-flex justify-content-center' style={{paddingTop:60, paddingBottom:70, color: 'rgb(85, 85, 85)'}}>
                                     <p className='text-omited'>You haven't follow anyone yet</p>
                                 </div>
                             }

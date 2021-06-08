@@ -29,7 +29,7 @@ const SigninForm = () => {
         })
         .then( async res => {
             if(!res.ok){
-                if(res.status == 400){
+                if(res.status === 400){
                     throw new Error('Email already in use');
                 }
                 else{
@@ -40,7 +40,6 @@ const SigninForm = () => {
             return await res.json();
         })
         .then( data => {
-            console.log(data.token);
             localStorage.setItem('token', data.token);
             document.cookie = `token=${data.token}`
             auth.login(()=>{console.log('signed in and logged in')});
