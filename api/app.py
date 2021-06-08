@@ -135,6 +135,7 @@ def get_userss():
     Gets all users
     """
     users = []
+    print(request.json['following'])
     for follow in request.json['following']:
         user = mongo.db.users.find_one({'_id': ObjectId(follow)})
         users.append(user)

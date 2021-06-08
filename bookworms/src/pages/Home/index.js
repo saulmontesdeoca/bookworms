@@ -18,7 +18,6 @@ const Home = () => {
     const [currentlyReading, setCurrentlyReading] = useState([]);
     const [following, setFollowing] = useState([]);
     const [posts, setPosts] = useState([]);
-    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const history = useHistory();
@@ -83,39 +82,10 @@ const Home = () => {
             }
         })
     }
-    const getUsers = async () => {
-        await fetch('/users', {
-            credentials: 'include',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                following,
-            })
-        })
-        .then( res => {
-            if(res.status === 408){
-                // this means the session has expired, logout and redirect to login
-                auth.logout(() => {
-                })
-                document.cookie = "token= "
-                history.push('/login')
-            } 
-            else{
-                res.json().then(data => {
-                    setUsers(data);
-                    console.log(data);
-                    console.log(users);
-                })
-            }
-        })
-    }
 
     useEffect(() => {
         fetchBooks();
         fetchUser();
-        getUsers();
         fetchPosts();
     }, []);
     return (
@@ -167,8 +137,8 @@ const Home = () => {
                                     <Spinner animation="border" variant="secondary" />
                                 </div>
                                 :
-                                users ? 
-                                <FollowingCard users={users}/>
+                                following ? 
+                                <FollowingCard following={following}/>
                                 :
                                 <div className='d-flex justify-content-center' style={{paddingTop:60, paddingBottom:70, color: 'rgb(85, 85, 85)'}}>
                                     <p className='text-omited'>You haven't follow anyone yet</p>
