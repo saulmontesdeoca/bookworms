@@ -485,5 +485,30 @@ def get_posts():
 
     return Response(posts, mimetype='application/json')
 
+@app.route('/follow', methods=['POST'])
+def follow_unfollow():
+    """
+    Follows/unfollows user
+    """
+    # Checking if session exists
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
+    # if it exist renew session time (user still active)
+    redis_cache.expire(str(token), SESSION_TIME )
+
+    action = request.json['action']
+    print(action)
+    print(request.json['user'])
+    if action == 'unfollow':
+        updated = mongo.db.users.update({'_id': ObjectId(token)}, {'$pull': {'following': request.json['user']}})
+    else:
+        updated = mongo.db.users.update({'_id': ObjectId(token)}, {'$push': {'following': request.json['user']}})
+    if not updated:
+        return 'Server error', 500
+
+    return 'Updated', 200
+
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

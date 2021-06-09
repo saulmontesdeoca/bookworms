@@ -30,6 +30,7 @@ const LoginForm = () => {
         .then(data => {
             auth.login(()=>{
                 console.log('logged in');
+                // document.cookie = `token=${data.token}`
             });
             localStorage.setItem('token', data.token);
             document.cookie = `token=${data.token}`

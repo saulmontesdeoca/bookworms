@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import Layout from '../../components/Layout';
-import { Container, Row } from 'react-bootstrap';
+import { Container, Row, Card, Image, Button } from 'react-bootstrap';
 import BookCarousel from '../../components/BookCarousel';
 import ProfileCover from '../../components/ProfileCover';
-import Helmet from 'react-helmet';import auth from '../../auth/Auth';
+import Helmet from 'react-helmet';
+import auth from '../../auth/Auth';
 
 const Profile = () => {
     const { id } = useParams();
     const history = useHistory();
 
+    const [myInfo, setMyInfo] = useState({});
     const [userInfo, setUserInfo] = useState({});
 
     const [myRecommendations, setMyRecommendations] = useState([]);
     const [wantRead, setWantRead] = useState([]);
     const [read, setRead] = useState([]);
     const [currentlyReading, setCurrentlyReading] = useState([]);
+    
+    const [change, setChange] = useState(0);
 
     const fetchBookshelf = async (bookshelf, setFunction) => {
         await fetch(`/mybookshelves/${id}/${bookshelf}`, {credentials: 'include'})
@@ -34,10 +38,44 @@ const Profile = () => {
                 }
             })
     }
+    const handleFollow = async (action, id1, id2) => {
+        await fetch('/follow', {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'user': id2,
+                action
+            })
+        })
+        setChange(change+1);
+    } 
+
+    const getFollowButton = (info, id2) => {
+        let found = false;
+        if(info.following){
+            for(let i = 0; i < info.following.length; i++){
+                if(info.following[i] === id2){
+                    found = true;
+                    break;
+                }
+            }
+            if(found){
+                return (<div style={{width: '30%'}}>
+                            <Button onClick={() => handleFollow('unfollow', info._id['$oid'], id2 )} variant='outline-success' size="lg" block>Following</Button>
+                        </div>)
+            }
+            return (<div style={{width: '30%'}}>
+                        <Button onClick={() => handleFollow('follow', info._id['$oid'], id2)} variant='success' size="lg" block>Follow</Button>
+                    </div>)
+        }
+    }
 
     useEffect(() => {
-        async function fetchUser(){
-            await fetch(`/user/${id}`, 
+        async function fetchUser(the_id, setFunction){
+            await fetch(`/user/${the_id}`, 
             {
                 credentials: 'include'
             }
@@ -50,25 +88,43 @@ const Profile = () => {
                 }
                 else{
                     res.json().then( usr => {
-                        setUserInfo(usr);
+                        setFunction(usr);
+                        console.log(usr);
                     })
                 }
             })
         }
-        fetchUser();
+
+        fetchUser(id, setUserInfo);
+        fetchUser(auth.getToken(), setMyInfo);
         fetchBookshelf('recommendations', setMyRecommendations);
         fetchBookshelf('want_read', setWantRead);
         fetchBookshelf('read', setRead);
         fetchBookshelf('currently_reading', setCurrentlyReading);
 
-    }, [id]);
+    }, [id, change]);
     return (
         <>
             <Helmet>
                 <title>BookWorms. - Profile</title>
             </Helmet>
             <Layout>
-                <ProfileCover img='/images/books-purple.png' title={`${userInfo.first_name}'s bookshelves`}/>
+
+                <div style={{position: 'relative'}}>
+                    <Card style={{position: 'absolute', width:'50%', bottom: 0, marginTop: 10, alignSelf: 'center', left: 0, right: 0, marginLeft: 'auto', marginRight: 'auto'}}>
+                        <Card.Body style={{fontSize: 24, textAlign: 'center', fontWeight: 'bolder'}}>
+                            <Row className='justify-content-center'>
+                                {userInfo && userInfo.first_name}'s bookshelves
+                            </Row>
+                            <Row className='justify-content-center'>
+                                { myInfo && getFollowButton(myInfo, id)}
+                            </Row>
+                        </Card.Body>
+                    </Card>
+                    <Image src='/images/books-purple.png' fluid style={{height: 500, width: '100%', objectFit: 'cover'}}/>
+                    <div style={{height: 40}}></div>
+                </div>
+
                 <Container style={{marginTop: 80}}>
                     <Row>
                         <h1>{userInfo && userInfo.first_name}'s recommendations</h1>
