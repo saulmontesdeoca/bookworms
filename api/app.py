@@ -7,6 +7,7 @@ from flask_pymongo import PyMongo, ObjectId
 from bson import json_util
 from passlib.hash import sha256_crypt
 import redis
+import re
 
 app = Flask(__name__)
 
@@ -166,6 +167,45 @@ def delete_user(id):
     else:
         return 'User not found', 404
 
+@app.route('/get_users', methods=['POST'])
+def get_users_query():
+    """
+    Gets all users that their name matches the query
+    """
+    # Checking if session exists
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
+    # if it exist renew session time (user still active)
+    redis_cache.expire(str(token), SESSION_TIME)
+    users = mongo.db.users.aggregate([
+        {
+            '$project': {
+                'fullname': {
+                    '$toLower': {
+                        '$concat': [
+                            '$first_name', ' ', '$last_name'
+                        ]
+                    }
+                }, 
+                'name': {
+                    '$concat': [
+                        '$first_name', ' ', '$last_name'
+                    ]
+                }, 
+                'email': '$email'
+            }
+        }, {
+            '$match': {
+                'fullname': re.compile(rf".*{request.json['query']}.*")
+            }
+        }
+    ])
+
+    users = json_util.dumps(users)
+    return Response(users, mimetype='application/json')
+
 @app.route('/get_books', methods=['GET'])
 def get_books():
     """
@@ -180,6 +220,41 @@ def get_books():
     redis_cache.expire(str(token), SESSION_TIME)
     books = mongo.db.books
     books = books.find({})
+    books = json_util.dumps(books)
+    return Response(books, mimetype='application/json')
+
+
+@app.route('/get_books', methods=['POST'])
+def get_books_query():
+    """
+    Gets all books that match query
+    """
+    # Checking if session exists
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
+    # if it exist renew session time (user still active)
+    redis_cache.expire(str(token), SESSION_TIME)
+    books = mongo.db.books
+    books = books.aggregate([
+        {
+            '$project': {
+                'title': {
+                    '$toLower': '$title'
+                },
+                'book_title': '$title', 
+                'book_id': '$book_id', 
+                'authors': '$authors', 
+                'image_url': '$image_url', 
+                'average_rating': '$average_rating'
+            }
+        }, {
+            '$match': {
+                'title': re.compile(rf".*{request.json['query']}.*")
+            }
+        }
+    ])
     books = json_util.dumps(books)
     return Response(books, mimetype='application/json')
 
@@ -218,6 +293,43 @@ def get_books_by_genre(genre):
     docs = json_util.dumps(docs)
     return Response(docs, mimetype='application/json')
     
+@app.route('/get_authors', methods=['POST'])
+def get_authors_query():
+    """
+    Gets all books that match query
+    """
+    # Checking if session exists
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
+    # if it exist renew session time (user still active)
+    # redis_cache.expire(str(token), SESSION_TIME)
+    books = mongo.db.books
+    books = books.aggregate([
+        {
+            '$project': {
+                'book_title': '$title', 
+                'book_id': '$book_id', 
+                'author': {
+                    '$toLower': {
+                        '$arrayElemAt': [
+                            '$authors', 0
+                        ]
+                    }
+                }, 
+                'authors': '$authors', 
+                'image_url': '$image_url', 
+                'average_rating': '$average_rating'
+            }
+        }, {
+            '$match': {
+                'author': re.compile(rf".*{request.json['query']}.*")
+            }
+        }
+    ])
+    books = json_util.dumps(books)
+    return Response(books, mimetype='application/json')
 
 @app.route('/getAuthorBooks', methods=['POST'])
 def get_author_books():
@@ -374,4 +486,4 @@ def get_posts():
     return Response(posts, mimetype='application/json')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
