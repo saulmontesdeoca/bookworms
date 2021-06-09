@@ -14,6 +14,7 @@ import BookDetails from './pages/BookDetails';
 import PrivateRoute from './routing/PrivateRoute';
 
 import PublicRoute from './routing/PublicRoute';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <PrivateRoute path="/discover" component={Discover}/>
             <PrivateRoute exact path="/search" component={Search}/>
             <PrivateRoute exact path="/book/:id" component={BookDetails}/>
+            <PrivateRoute exact path="/bookworm/:id" component={Profile}/>
           </Switch>
       </Router>
     </div>

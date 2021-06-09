@@ -269,6 +269,36 @@ def bookshelf_books(bookshelf):
     bookshelf_books = json_util.dumps(bookshelf_books)
     return Response(bookshelf_books, mimetype='application/json')
 
+@app.route('/mybookshelves/<id>/<bookshelf>', methods=['GET'])
+def bookshelf_user(id, bookshelf):
+    """
+    Gets all books in an specific user bookshelf
+    """
+    # Checking if session exists
+    token = request.cookies.get('token')
+    session = redis_cache.hgetall(str(token))
+    if not session:
+        return 'No session', 408
+    # if it exist renew session time (user still active)
+    redis_cache.expire(str(token), SESSION_TIME )
+
+    # validatin user
+    user = mongo.db.users.find_one({'_id': ObjectId(id)})
+    if not user:
+        return 'User not found', 404
+
+    book_ids = user[bookshelf]
+    if not book_ids:
+        return 'No books found', 404
+    #querying all documents
+    books = mongo.db.books
+    bookshelf_books = []
+    for book_id in book_ids:
+        book = books.find_one({'book_id': book_id})
+        bookshelf_books.append(book)
+    bookshelf_books = json_util.dumps(bookshelf_books)
+    return Response(bookshelf_books, mimetype='application/json')
+
 @app.route('/mybookshelf/<action>', methods=['POST'])
 def edit_bookshelf(action):
     """
@@ -305,7 +335,7 @@ def edit_bookshelf(action):
 @app.route('/posts', methods=['GET'])
 def get_posts():
     """
-    Gets posts from followers
+    Gets posts from following
     """
     # Checking if session exists
     token = request.cookies.get('token')

@@ -3,7 +3,7 @@ import Layout from '../../components/Layout';
 import Helmet from 'react-helmet';
 import auth from '../../auth/Auth';
 import { useHistory } from 'react-router-dom';
-import { Container, Row, Col, Spinner, Card, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Spinner } from 'react-bootstrap';
 import FeedCarousel from '../../components/FeedCarousel';
 import PostCard from '../../components/PostCard';
 import FollowingCard from '../../components/FollowingCard';
@@ -29,7 +29,7 @@ const Home = () => {
                     // this means the session has expired, logout and redirect to login
                     auth.logout(() => {
                     })
-                    document.cookie = "token= "
+                    document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
                     history.push('/login')
                 } 
                 else{
@@ -46,7 +46,7 @@ const Home = () => {
                     // this means the session has expired, logout and redirect to login
                     auth.logout(() => {
                     })
-                    document.cookie = "token="
+                    document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
                     history.push('/login')
                 } 
                 else{
@@ -70,17 +70,17 @@ const Home = () => {
                 // this means the session has expired, logout and redirect to login
                 auth.logout(() => {
                 })
-                document.cookie = "token="
+                document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
                 history.push('/login')
             } 
             else{
                 res.json().then(data => {
                     setPosts(data);
-                    console.log(posts);
-                    setLoading(false);
                 })
             }
         })
+        setLoading(false);
+
     }
 
     useEffect(() => {
@@ -114,17 +114,18 @@ const Home = () => {
                             }
                             <h5 style={{fontFamily: 'Alfa Slab One', color: 'rgb(85, 85, 85)', marginLeft: 18, paddingBottom: 0}}>Recent Posts</h5>
                             <div style={{backgroundColor: 'rgb(85, 85, 85)', height: 5, width: 28, marginLeft: 18}}></div>
-                            {   loading ? 
+                            {   loading && 
                                 <div className='d-flex justify-content-center' style={{paddingTop:90, paddingBottom:70}}>
                                     <Spinner animation="border" variant="secondary" />
                                 </div>
-                                :
+                            }
+                            {
                                 posts ?
-                                posts.map( (post, key) =>(
-                                    <PostCard key={key} post={post}/>
-                                ))
+                                    posts.map( (post, key) =>(
+                                        <PostCard key={key} post={post}/>
+                                    ))
                                 :
-                                <div className='d-flex justify-content-center' style={{paddingTop:90, paddingBottom:70, color: 'rgb(85, 85, 85)'}}>
+                                <div className='justify-content-center' style={{paddingTop:90, paddingBottom:70, color: 'rgb(85, 85, 85)'}}>
                                     <p className='text-omited'>No Posts found</p>
                                 </div>
                             }

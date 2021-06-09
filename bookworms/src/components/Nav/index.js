@@ -14,8 +14,7 @@ const NavBar = (props) => {
                 method: 'POST',
                 credentials: 'include'
             }) 
-            console.log('User logged out');
-            document.cookie = "token="
+            document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
             history.push('/login');
         })
     }

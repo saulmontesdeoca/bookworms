@@ -24,7 +24,7 @@ const FollowingCard = (props) => {
                 // this means the session has expired, logout and redirect to login
                 auth.logout(() => {
                 })
-                document.cookie = "token= "
+                document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
                 history.push('/login')
             } 
             else{

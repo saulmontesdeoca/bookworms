@@ -30,9 +30,9 @@ const LoginForm = () => {
         .then(data => {
             auth.login(()=>{
                 console.log('logged in');
-                localStorage.setItem('token', data.token);
-                document.cookie = `token=${data.token}`
             });
+            localStorage.setItem('token', data.token);
+            document.cookie = `token=${data.token}`
             history.push('/');
         }).catch( err => setError(err.message));
     }
