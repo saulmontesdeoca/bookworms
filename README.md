@@ -48,7 +48,14 @@ Como parte de la entrega final del proyecto, se debe incluir la siguiente inform
 
 ## 2. Descripción del proyecto
 
-*[Incluya aquí la descripción del proyecto seleccionado.]*
+Bookworms es una red social de libros en el que los usuarios pueden compartir sus repisas de libros. Los usuarios llamados bookworms, pueden registrarse o hacer login para usar la plataforma. Pueden editar sus repisas, pueden buscar libros por autor o titulo o entrar a la sección de descubrir dónde se encuentran todos los libros desponibles en la red social categorizados por género. Pueden añadirlos a la repisa de su elección. Estas repisas de libros la pueden ver sus seguidores. Como bookworm, tienes acceso a buscar a amigos en la red para seguirlos y tambien ver sus repisas. Las repisas de libros llamadas bookshelves se categorizan como:
+
+ - Recomendaciones
+ - Actualmente leyendo
+ - Quiero leer
+ - Leídos
+
+Al entrar a ver más información sobre algún libro pueden ver su titulo, autor, calificación por BookWorms, descripción, más libros sobre el autor (si estan disponibles en la base de datos), más libros del mismo género, Aquí tambien es donde se despliegan 4 botones los cuales se encargan de añadir o remover de las repisas de los usuarios dicho libro.
 
 ## 3. Solución
 
@@ -66,29 +73,800 @@ A continuación aparecen descritos los diferentes elementos que forman parte de 
 
 *[Incluya aquí una explicación de la solución utilizada para el frontend del proyecto. No olvide incluir las ligas o referencias donde se puede encontrar información de los lenguajes de programación, frameworks y librerías utilizadas.]*
 
-#### 3.3.1 Lenguaje de programación
+#### 3.3.1 Lenguajes de programación
+
+- Javascript
+- CSS
+- HTML
+
 #### 3.3.2 Framework
+
+- React
+
 #### 3.3.3 Librerías de funciones o dependencias
+
+- react-bootstrap
+- react-multi-carousel
 
 ### 3.4 API o backend
 
 *[Incluya aquí una explicación de la solución utilizada para implementar la API del proyecto. No olvide incluir las ligas o referencias donde se puede encontrar información de los lenguajes de programación, frameworks y librerías utilizadas.]*
 
 #### 3.4.1 Lenguaje de programación
+
+- Python
+
 #### 3.4.2 Framework
+
+- Flask
+
 #### 3.4.3 Librerías de funciones o dependencias
 
-*[Incluya aquí una explicación de cada uno de los endpoints que forman parte de la API. Cada endpoint debe estar correctamente documentado.]*
+- redis (python driver)
+- pymongo
+- passlib
+- flask_pymongo
+- dnspython
 
-*[Por cada endpoint debe incluir lo siguiente:]*
+#### 3.4.4 Documentación API
+
+#### @app.route('/redis/<id>', methods=['POST'])
+* **Descripción**:
+Verificacion de sesión en redis del id. El id se pasa como parametro en la url. Usado para development
+* **URL**:
+```python
+'/redis/<id>'
+```
+* **Verbos HTTP**:
+    - POST
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON de la respuesta**:
+```json
+'No session'
+```
+* **Códigos de error**:
+    - 408: No session
+
+#### @app.route('/session/<token>', methods=['GET'])
+* **Descripción**:
+
+Verificacion de sesión en redis del id recibido por cookies. El id se pasa como parametro en la url. Usado para development.
+
+* **URL**:
+```python
+'/session/<token>'
+```
+* **Verbos HTTP**:
+    - GET
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+
+* **Formato JSON de la respuesta**:
+```json
+'No session'
+```
+* **Códigos de error**:
+    - 408: No session
+
+#### @app.route('/login', methods=['POST'])
+* **Descripción**:
+Login del usuario. Se encarga de ir a buscar a la BD el usuario y si aparece verifica las contraseñas hasheadas.
+* **URL**:
+```python
+'/login'
+```
+* **Verbos HTTP**:
+    - POST
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON del cuerpo de la solicitud**: 
+```json
+{
+    "email",
+    "password"
+}
+```
+* **Formato JSON de la respuesta**:
+```json
+{
+    "_id":,
+    "first_name",
+    "last_name",
+    "email",
+    "read",
+    "want_read",
+    "recommendations",
+    "currently_reading",
+    "posts",
+    "following"
+}
+```
+* **Códigos de error**:
+    - 500: Server error
+    - 408: No session
+
+#### @app.route('/signin', methods=['POST'])
 
 * **Descripción**:
+Registro del usuario a la base de datos.
 * **URL**:
+```python
+'/signin'
+```
 * **Verbos HTTP**:
+    - POST
 * **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
 * **Formato JSON del cuerpo de la solicitud**: 
+```json
+{
+    "first_name",
+    "last_name"
+    "email",
+    "password",
+    "password2"
+}
+```
 * **Formato JSON de la respuesta**:
+```json
+{
+    "_id":,
+    "first_name",
+    "last_name",
+    "email",
+    "read",
+    "want_read",
+    "recommendations",
+    "currently_reading",
+    "posts",
+    "following"
+}
+```
 * **Códigos de error**:
+    - 500: Server error
+    - 408: No session
+
+@app.route('/logout', methods=['POST'])
+
+* **Descripción**:
+Va a redis y elimina la sesion obtenida por el token enviado en cookies y recibido por la API
+* **URL**:
+```python
+'/logout'
+```
+* **Verbos HTTP**:
+    - POST
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+
+* **Códigos de error**:
+    - 500: Server error
+    - 408: No session
+
+#### @app.route('/users', methods=['GET'])
+
+* **Descripción**:
+Devuelve todos los usuarios en la base de datos
+* **URL**:
+```python
+'/users'
+```
+* **Verbos HTTP**:
+    - GET
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+
+* **Formato JSON de la respuesta**:
+Un array de objetos como el siguiente:
+```json
+{
+    "_id":,
+    "first_name",
+    "last_name",
+    "email",
+    "read",
+    "want_read",
+    "recommendations",
+    "currently_reading",
+    "posts",
+    "following"
+}
+```
+* **Códigos de error**:
+    - 404: Not found
+    - 408: No session
+
+#### @app.route('/users', methods=['POST'])
+
+* **Descripción**:
+Registra a un usuario a la base de datos
+* **URL**:
+```python
+'/users'
+```
+* **Verbos HTTP**:
+    - POST
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON del cuerpo de la solicitud**: 
+```json
+{
+    "first_name",
+    "last_name"
+    "email",
+    "password",
+    "password2"
+}
+```
+* **Códigos de error**:
+    - 500: Server error
+    - 408: No session
+
+#### @app.route('/user/<id>', methods=['GET'])
+
+* **Descripción**:
+Regresa el usuario que su id hace match con el recibido en la url
+* **URL**:
+```python
+'/user/<id>'
+```
+* **Verbos HTTP**:
+    - GET
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+
+* **Formato JSON de la respuesta**:
+```json
+{
+    "_id":,
+    "first_name",
+    "last_name",
+    "email",
+    "read",
+    "want_read",
+    "recommendations",
+    "currently_reading",
+    "posts",
+    "following"
+}
+```
+* **Códigos de error**:
+    - 404: Not found
+    - 408: No session
+
+#### @app.route('/user/<id>', methods=['DELETE'])
+
+* **Descripción**:
+Elimina usuario que su id hace match con el recibido en la url
+* **URL**:
+```python
+'/user/<id>'
+```
+* **Verbos HTTP**:
+    - DELETE
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+
+* **Códigos de error**:
+    - 404: Not found
+    - 408: No session
+
+#### @app.route('/get_users', methods=['POST'])
+
+* **Descripción**:
+Regresa todos los usuarios cuyo nombre hace match con el query obtenido
+* **URL**:
+```python
+'/get_users'
+```
+* **Verbos HTTP**:
+    - POST
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON del cuerpo de la solicitud**: 
+```json
+{
+    "query"
+}
+```
+* **Formato JSON de la respuesta**:
+Un array de objetos con el siguiente formato
+```json
+{
+    "_id":,
+    "first_name",
+    "last_name",
+    "email",
+    "read",
+    "want_read",
+    "recommendations",
+    "currently_reading",
+    "posts",
+    "following"
+}
+```
+* **Códigos de error**:
+    - 404: Not found
+    - 500: Server error
+    - 408: No session
+
+#### @app.route('/get_books', methods=['POST'])
+
+* **Descripción**:
+Regresa todos los libros cuyo titulo hace match con el query obtenido
+* **URL**:
+```python
+'/get_books'
+```
+* **Verbos HTTP**:
+    - POST
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON del cuerpo de la solicitud**: 
+```json
+{
+    "query"
+}
+```
+* **Formato JSON de la respuesta**:
+```json
+{
+    "_id",
+    "isbn",
+    "text_reviews_count"",
+    "series",
+    "country_code",
+    "language_code",
+    "genre",
+    "asin",
+    "is_ebook",
+    "average_rating",
+    "kindle_asin",
+    "similar_books",
+    "description",
+    "format",
+    "link",
+    "authors",
+    "publisher",
+    "num_pages",
+    "publication_day",
+    "isbn13",
+    "publication_month",
+    "edition_information",
+    "publication_year",
+    "url",
+    "image_url",
+    "book_id",
+    "ratings_count",
+    "work_id",
+    "title",
+    "title_without_series"
+}
+```
+* **Códigos de error**:
+    - 404: Not found
+    - 408: No session
+
+#### @app.route('/get_books', methods=['GET'])
+
+* **Descripción**:
+Devuelve todos los libros en la base de datos
+* **URL**:
+```python
+'/get_books/<id>'
+```
+* **Verbos HTTP**:
+    - GET
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON de la respuesta**:
+Un array de objetos con el siguiente formato:
+
+```json
+{
+    "_id",
+    "isbn",
+    "text_reviews_count"",
+    "series",
+    "country_code",
+    "language_code",
+    "genre",
+    "asin",
+    "is_ebook",
+    "average_rating",
+    "kindle_asin",
+    "similar_books",
+    "description",
+    "format",
+    "link",
+    "authors",
+    "publisher",
+    "num_pages",
+    "publication_day",
+    "isbn13",
+    "publication_month",
+    "edition_information",
+    "publication_year",
+    "url",
+    "image_url",
+    "book_id",
+    "ratings_count",
+    "work_id",
+    "title",
+    "title_without_series"
+}
+```
+* **Códigos de error**:
+    - 500: Server error
+    - 408: No session
+
+#### @app.route('/find_book/<id>', methods=['GET'])
+
+* **Descripción**:
+Devuelve el libro que matchea con el id obtenido en la url del GET request
+* **URL**:
+```python
+'/find_book/<id>'
+```
+* **Verbos HTTP**:
+    - GET
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+
+* **Formato JSON de la respuesta**:
+```json
+{
+    "_id",
+    "isbn",
+    "text_reviews_count"",
+    "series",
+    "country_code",
+    "language_code",
+    "genre",
+    "asin",
+    "is_ebook",
+    "average_rating",
+    "kindle_asin",
+    "similar_books",
+    "description",
+    "format",
+    "link",
+    "authors",
+    "publisher",
+    "num_pages",
+    "publication_day",
+    "isbn13",
+    "publication_month",
+    "edition_information",
+    "publication_year",
+    "url",
+    "image_url",
+    "book_id",
+    "ratings_count",
+    "work_id",
+    "title",
+    "title_without_series"
+}
+```
+* **Códigos de error**:
+    - 404: Not found
+    - 408: No session
+
+#### @app.route('/getBooks/<genre>', methods=['GET'])
+    
+* **Descripción**:
+Regresa todos los libros que matchean el genero dado en la url del GET request
+* **URL**:
+```python
+'/get_books/<genre>'
+```
+* **Verbos HTTP**:
+    - GET
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON de la respuesta**:
+Un array de objetos con el siguiente formato:
+```json
+{
+    "_id",
+    "isbn",
+    "text_reviews_count"",
+    "series",
+    "country_code",
+    "language_code",
+    "genre",
+    "asin",
+    "is_ebook",
+    "average_rating",
+    "kindle_asin",
+    "similar_books",
+    "description",
+    "format",
+    "link",
+    "authors",
+    "publisher",
+    "num_pages",
+    "publication_day",
+    "isbn13",
+    "publication_month",
+    "edition_information",
+    "publication_year",
+    "url",
+    "image_url",
+    "book_id",
+    "ratings_count",
+    "work_id",
+    "title",
+    "title_without_series"
+}
+```
+* **Códigos de error**:
+    - 404: Not found
+    - 408: No session
+
+#### @app.route('/get_authors', methods=['POST'])
+
+* **Descripción**:
+Regresa todos los libros cuyo autor matchea el query dado
+* **URL**:
+```python
+'/get_auhtors'
+```
+* **Verbos HTTP**:
+    - POST
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON del cuerpo de la solicitud**: 
+```json
+{
+    "query"
+}
+```
+* **Formato JSON de la respuesta**:
+Un array de objetos con el siguiente formato
+```json
+{
+    "_id",
+    "isbn",
+    "text_reviews_count"",
+    "series",
+    "country_code",
+    "language_code",
+    "genre",
+    "asin",
+    "is_ebook",
+    "average_rating",
+    "kindle_asin",
+    "similar_books",
+    "description",
+    "format",
+    "link",
+    "authors",
+    "publisher",
+    "num_pages",
+    "publication_day",
+    "isbn13",
+    "publication_month",
+    "edition_information",
+    "publication_year",
+    "url",
+    "image_url",
+    "book_id",
+    "ratings_count",
+    "work_id",
+    "title",
+    "title_without_series"
+}
+```
+* **Códigos de error**:
+    - 404: Not found
+    - 408: No session
+
+#### @app.route('/mybookshelves/<bookshelf>', methods=['GET'])
+
+* **Descripción**:
+Regresa todos los libros de un bookshelf del user que tiene el id igual que el token recibido
+* **URL**:
+```python
+'/mybookshelves/<bookshelf>'
+```
+* **Verbos HTTP**:
+    - GET
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+
+* **Formato JSON de la respuesta**:
+Un array de objetos con el siguiente formato:
+```json
+{
+    "_id",
+    "isbn",
+    "text_reviews_count"",
+    "series",
+    "country_code",
+    "language_code",
+    "genre",
+    "asin",
+    "is_ebook",
+    "average_rating",
+    "kindle_asin",
+    "similar_books",
+    "description",
+    "format",
+    "link",
+    "authors",
+    "publisher",
+    "num_pages",
+    "publication_day",
+    "isbn13",
+    "publication_month",
+    "edition_information",
+    "publication_year",
+    "url",
+    "image_url",
+    "book_id",
+    "ratings_count",
+    "work_id",
+    "title",
+    "title_without_series"
+}
+```
+* **Códigos de error**:
+    - 404: Not found
+    - 408: No session
+
+#### @app.route('/mybookshelf/<action>', methods=['POST'])
+
+* **Descripción**:
+Agrega o elimina un libro del bookshelf de un usuario
+* **URL**:
+```python
+'/mybookshelf/<action>'
+```
+* **Verbos HTTP**:
+    - POST
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON del cuerpo de la solicitud**: 
+```json
+{
+    "bookshelf",
+    "book_id"
+}
+```
+* **Códigos de error**:
+    - 500: Server error
+    - 408: No session
+
+#### @app.route('/posts', methods=['GET'])
+
+* **Descripción**:
+Obtiene todos los post de todos los usuarios que esta siguiendo el usuario que tiene el mismo id que el token recibido
+* **URL**:
+```python
+'/posts'
+```
+* **Verbos HTTP**:
+    - GET
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON de la respuesta**:
+```json
+{
+    "user_id",
+    "first_name",
+    "last_name",
+    "bookshelf",
+    "date",
+    "book_id",
+    "book_img",
+    "book_title",
+    "authors",
+    "rating"
+}
+```
+* **Códigos de error**:
+    - 404: Not found
+    - 408: No session
+
+#### @app.route('/follow', methods=['POST'])
+
+* **Descripción**:
+Agrega el id recibido al array de following de un usuario en la base de datos
+* **URL**:
+```python
+'/follow'
+```
+* **Verbos HTTP**:
+    - POST
+* **Headers**:
+
+| Plugin | README |
+| ------ | ------ |
+| Content-Type | application/json |
+| token | <token> |
+* **Formato JSON del cuerpo de la solicitud**: 
+```json
+{
+    "following"
+}
+```
+* **Códigos de error**:
+    - 500: Server error
+    - 408: No session
 
 ## 3.5 Pasos a seguir para utilizar el proyecto
 
