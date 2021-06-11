@@ -2,6 +2,9 @@
 
 # *BookWorms*
 ---
+<div align="center">
+    <img alt="Logo" src="./docs/images/logo.png" width="100%">
+</div>
 
 ##### Integrantes:
 1. *[Saúl Montes De Oca](http://github.com/saulmontesdeoca/)* - *A01025975* - *CSF*
@@ -63,15 +66,84 @@ A continuación aparecen descritos los diferentes elementos que forman parte de 
 
 ### 3.1 Modelos de *bases de datos* utilizados
 
-*[Incluya aquí una explicación del análisis realizado y la justificación de los modelos de *bases de datos* seleccionados. Incluya todo lo que considere necesario para que una persona sin conocimientos técnicos pueda entender de que trata su solución.]*
+Para la base de datos se tienen completados 3 elementos: usuarios, libros, autores y posts. Para una mejor prueba de concepto del proyecto decidimos usar un esquema de bases de datos para mongoDB de Embedding. Como esta planteada la base de datos es que los autores estan embebidos en los documentos de los libros y los posts estan embebidos en los documentos de los usuarios. Se muestran los siguientes ejemplos de los esquemas realizados en mongo.
+- Usuarios:
+
+<div align="center">
+    <img alt="Logo" src="./docs/images/users_schema.png" width="70%">
+</div>
+
+- Libros:
+
+<div align="center">
+    <img alt="Logo" src="./docs/images/books_schema.png" width="70%">
+</div>
+
+Para el manejo de sesiones se utilizó Redis. Cada vez que el frontend hace una petición a la API, se checa primero con Redis si la sesión sigue existiendo. El tiempo de expiración predeterminado por el backend es de 30 minutos. Para Redis se utilizó el siguiente esquema para guardar información del usuario:
+
+```
+    'token'
+    'email'
+    'first_name'
+    'last_ame'
+```
 
 ### 3.2 Arquitectura de la solución
 
-*[Incluya aquí un diagrama donde se aprecie la arquitectura de la solución propuesta, así como la interacción entre los diferentes componentes de la misma.]*
+La arquitectura que se trató de implementar fue modular y escalable. Se hizo por capas: api, frontend, dbs, donde las capas de api y frontend estan empaquetadas en contenedores de Docker y son manejadas por contenedores de loadbalancers todo esto orquestado usando minikube. Como funciona el flujo es que se accede primero a un loadbalancer que funciona como frontend del Frontend de bookworms. Despues las peticiones que haga el frontend al API llegan antes a otro loadbalancer que este funciona como frontend del backend. El backend se comunica directamente con los clústers de MongoDB Atlas y RedisLabs. De esta manera se puede alcanzar una solución modular, escalable, con redundancia y alta disponibilidad.
+
+<div align="center">
+    <img alt="Logo" src="./docs/images/Arquitectura.png" width="100%">
+</div>
+
 
 ### 3.3 Frontend
 
-*[Incluya aquí una explicación de la solución utilizada para el frontend del proyecto. No olvide incluir las ligas o referencias donde se puede encontrar información de los lenguajes de programación, frameworks y librerías utilizadas.]*
+Para el frontend se utilizó React. Principalmente a nivel de las páginas es donde se hacen todos los fetches a la API. Se implemento un módulo de autenticación para el manejo de login y logout. El folder esta dividio como:
+```
+- bookworms/
+    - public/
+    - src/
+        - auth/
+            - Auht
+        - components/
+            - BookCarousel
+            - BookCover
+            - BookInfoHeader
+            - BookshelfCard
+            - BookshelfResume
+            - DicoverCarousel
+            - FeedCarousel
+            - FeedCarouselBook
+            - FollowingCard
+            - Layout
+            - LoginForm
+            - LoginLayout
+            - Nav
+            - PageCover
+            - PostCard
+            - ProfileCover
+            - SearchCard
+            - SearchCover
+            SearchResult
+            - SigninForm
+            - UserCard
+        - pages/
+            - BookDetails
+            - Discover
+            - Home
+            - Login
+            - MyBooks
+            - Profile
+            - Search
+            - Signin
+        -routing/
+            - PublicRoute
+            - PrivateRoute
+        - App.js
+        - index.css
+        - index.js
+```
 
 #### 3.3.1 Lenguajes de programación
 
@@ -90,7 +162,7 @@ A continuación aparecen descritos los diferentes elementos que forman parte de 
 
 ### 3.4 API o backend
 
-*[Incluya aquí una explicación de la solución utilizada para implementar la API del proyecto. No olvide incluir las ligas o referencias donde se puede encontrar información de los lenguajes de programación, frameworks y librerías utilizadas.]*
+El backend esta desarrollado con flask. La applicación se conecta a los clústers de bases de datos de MongoDB Atlas y RedisLabs. Cada endpoint antes de hacer alguna operación siempre checa que exista la sesión del usuario en RedisLabs. La API recibe un token del frontend el cual se obtiene mediante cookies. Este token es el id del usuario en MongoDB. Por lo tanto cada operación sabe de que usuario provino. Cada vez que si encuentra la sesión del usuario, el backend renueva el tiempo de expiración de la sesión del usuario en Redis. Cuando no la encuentra manda un response al frontend de que no hay sesión activa para dicho usuario y el frontend deslogea al usuario.
 
 #### 3.4.1 Lenguaje de programación
 
@@ -869,8 +941,34 @@ Agrega el id recibido al array de following de un usuario en la base de datos
     - 408: No session
 
 ## 3.5 Pasos a seguir para utilizar el proyecto
+    
+Primero debes de asegurarte de tener instalado [Docker](https://docs.docker.com/engine/install/) y ejecutarlo.
+    
+Luego tienes que clonar el repositorio y cambiarte a la carpeta descargada:
+```ssh
+git clone git@github.com:tec-csf/tc3041-pf-primavera-2021-team7.git
+cd tc3041-pf-primavera-2021-team7
+```
 
-*[Incluya aquí una guía paso a paso para poder utilizar el proyecto, desde la clonación del repositorio hasta el despliegue de la solución en una plataforma en la nube.]*
+Se puede utilizar el proyecto de dos formas:
+1. Docker-compose
+    
+Solamente tienes que ejecutar los siguientes comandos
+```ssh
+docker-compose up -d
+```
+    
+2. Minikube
+
+ Para realizarlo con kubernetes en minikube debes de tener instalado [Minikube](https://minikube.sigs.k8s.io/docs/start/) y [Kubectl](https://kubernetes.io/es/docs/tasks/tools/install-kubectl/).
+
+```ssh
+minikube start
+eval $(minikube docker-env)
+kubectl apply -f api-claim0-persistentvolumeclaim.yaml,api-deployment.yaml,client-claim0-persistentvolumeclaim.yaml,client-deployment.yaml,lb-backend-claim0-persistentvolumeclaim.yaml,lb-backend-deployment.yaml,lb-backend-service.yaml,lb-frontend-claim0-persistentvolumeclaim.yaml,lb-frontend-deployment.yaml,lb-frontend-service.yaml,node-modules-persistentvolumeclaim.yaml
+
+kubectl service lb-frontend
+```
 
 ## 4. Referencias
 
