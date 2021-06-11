@@ -972,4 +972,8 @@ kubectl service lb-frontend
 
 ## 4. Referencias
 
-*[Incluya aquí las referencias a sitios de interés, datasets y cualquier otra información que haya utilizado para realizar el proyecto y que le puedan ser de utilidad a otras personas que quieran usarlo como referencia]*
+- [Docker Compose Docs](https://docs.docker.com/compose/)
+- [Kubernetes: Connecting Applications with Services](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/)
+- [Minikube Docs](https://minikube.sigs.k8s.io/docs/handbook/accessing/)
+- [Kompose Docs](https://kompose.io/)
+- [GCP Expón aplicaciones con servicios](https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps)
