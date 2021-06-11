@@ -2,28 +2,42 @@ version: '3'
 
 services:
   api:
-    build: api
+    image: saulmdo/bookworms-api
     command: ["flask", "run", "--host=0.0.0.0"]
     volumes:
       - ./api:/backend
     environment:
       - FLASK_ENV=development
       - FLASK_APP=app.py
-    ports:
-      - "5000:5000"
 
   client:
-    build: bookworms
+    image: saulmdo/bookworms
     command: ["npm", "start"]
     volumes:
       - ./bookworms:/frontend
       - node-modules:/frontend/node_modules
     environment:
       - NODE_ENV=development
+
+  lb-frontend:
+    image: dockercloud/haproxy
+    links:
+      - client
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - '3000:3000'
-    depends_on:
+      - 80:80
+      - 81:1936
+
+  lb-backend:
+    image: dockercloud/haproxy
+    links:
       - api
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 82:80
+      - 83:1936
 
 volumes:
   node-modules:
