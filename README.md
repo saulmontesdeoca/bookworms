@@ -28,8 +28,7 @@ cd bookworms
 
 You can do it 2 ways:
 1. Docker-compose
-    
-Solamente tienes que ejecutar los siguientes comandos
+
 ```ssh
 docker-compose up -d
 ```
