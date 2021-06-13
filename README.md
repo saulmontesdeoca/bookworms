@@ -15,6 +15,10 @@ Bookworms is a book social network where users can share their book shelves. Use
 
 When you enter to see more information about a book you can see its title, author, rating, description, more books by author, and genre, Also, there are 4 buttons which are responsible for adding/removing the book to/from each shelve.
 
+<div align="center">
+    <img alt="bookworms" src="./docs/images/bookworms.gif" width="100%">
+</div>
+
 ---
 # 🚀 How to run 
     
