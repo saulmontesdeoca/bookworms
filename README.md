@@ -47,7 +47,17 @@ kubectl service lb-frontend
 ```
 
 # 💾 Databases
+Redis:
+- Redis is used for the session storage. There is a 30 minute session set whenever the user interact with the app. If the sesssion expires the app will logout the user. Each session is stored in a dictionary with the key as the token (the ObjectId of the user) and value as the users's info as seen below.
+```ssh
+"token": {
+    first_name,
+    last_name,
+    email
+}
+```
 
+MongoDB:
 - In MongoDB there are 2 collections: users and books.
 - Database schema: embedding.
 - Authors are embedded in the documents of the books collection and the posts are embedded in the documents of the users collection. 
@@ -62,6 +72,13 @@ kubectl service lb-frontend
 <div align="center">
     <img alt="Logo" src="./docs/images/books_schema.png" width="70%">
 </div>
+
+## 📚 Dataset Reference
+
+The books dataset was obtained from [UCSD's Goodreads Dataset](https://sites.google.com/eng.ucsd.edu/ucsdbookgraph/books).
+
+- Mengting Wan, Julian McAuley, ["Item Recommendation on Monotonic Behavior Chains"](https://www.google.com/url?q=https%3A%2F%2Fgithub.com%2FMengtingWan%2Fmengtingwan.github.io%2Fraw%2Fmaster%2Fpaper%2Frecsys18_mwan.pdf&sa=D&sntz=1&usg=AFQjCNGGcNRW1tSZKPWO0yZsr8mj7MkWuw), in RecSys'18.  [bibtex](https://www.google.com/url?q=https%3A%2F%2Fdblp.uni-trier.de%2Frec%2Fbibtex%2Fconf%2Frecsys%2FWanM18&sa=D&sntz=1&usg=AFQjCNEy2HDVC1K59JJWybzGgq3MafQcWQ)
+- Mengting Wan, Rishabh Misra, Ndapa Nakashole, Julian McAuley, ["Fine-Grained Spoiler Detection from Large-Scale Review Corpora"](https://www.google.com/url?q=https%3A%2F%2Fwww.aclweb.org%2Fanthology%2FP19-1248&sa=D&sntz=1&usg=AFQjCNG8xlMi09lyuzzMI8lCW58wrBEGsQ), in ACL'19. [bibtex](https://www.google.com/url?q=https%3A%2F%2Fdblp.uni-trier.de%2Frec%2Fbibtex%2Fconf%2Facl%2FWanMNM19&sa=D&sntz=1&usg=AFQjCNG5Igm7tWfvFHlCyvCPxIciDzqK4Q)
 
 
 # 🏛 Architecture
