@@ -16,7 +16,7 @@ Bookworms is a book social network where users can share their book shelves. Use
 When you enter to see more information about a book you can see its title, author, rating, description, more books by author, and genre, Also, there are 4 buttons which are responsible for adding/removing the book to/from each shelve.
 
 ---
-# 🚀 How to run 
+# 🚀 How to run it
     
 First you need to make sure you have installed [Docker](https://docs.docker.com/engine/install/) and run it.
     
