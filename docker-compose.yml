@@ -2,7 +2,7 @@ version: '3'
 
 services:
   api:
-    image: saulmdo/bookworms-api
+    build: ./api
     command: ["flask", "run", "--host=0.0.0.0"]
     volumes:
       - ./api:/backend
@@ -11,7 +11,7 @@ services:
       - FLASK_APP=app.py
 
   client:
-    image: saulmdo/bookworms
+    build: ./bookworms
     command: ["npm", "start"]
     volumes:
       - ./bookworms:/frontend

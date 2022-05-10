@@ -12,10 +12,10 @@ import re
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'bookworms'
-app.config['MONGO_URI'] = 'mongodb+srv://admin:admin_password123@bookwormscluster.2skn0.mongodb.net/bookworms?retryWrites=true&w=majority'
+app.config['MONGO_URI'] = 'mongodb+srv://saulmdo:098923.23@cluster0.cfaxr.mongodb.net/bookworms?retryWrites=true&w=majority'
 
 mongo = PyMongo(app)
-redis_cache = redis.Redis(host='redis-10597.c261.us-east-1-4.ec2.cloud.redislabs.com', port=10597,  db=0, password='W9JLic5gqqv4o99zM6V4FKDLBplsdrGR')
+redis_cache = redis.Redis(host='redis-13659.c17.us-east-1-4.ec2.cloud.redislabs.com', port=13659,  db=0, password='XT91GfYCmT4Hil6hc2yT7H36gdvTh9Xw')
 SESSION_TIME = 1800
 
 @app.route('/redis/<id>', methods=['POST'])
@@ -89,7 +89,7 @@ def signin():
     # Checking if passwords dont match
     if request.json['password'] != request.json['password2']:
         return "Passwords don't match", 402
-    id = mongo.db.users.insert(
+    id = mongo.db.users.insert_one(
         {
             'first_name': request.json['firstName'],
             'last_name': request.json['lastName'],
@@ -102,6 +102,7 @@ def signin():
         }
     )
     if id:
+        id = id.inserted_id
         redis_cache.hset(str(id), 'id', str(id))
         redis_cache.hset(str(id), 'first_name', str(request.json['firstName']))
         redis_cache.hset(str(id), 'last_name', str(request.json['lastName']))
